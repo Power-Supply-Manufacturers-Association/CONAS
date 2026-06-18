@@ -200,18 +200,6 @@
                 "sealingMaterialRef": {
                     "description": "coas-materials id of the gasket/seal, when present.",
                     "type": "string"
-                },
-                "flammabilityRating": {
-                    "description": "Housing flammability class per UL 94.",
-                    "type": "string",
-                    "enum": [
-                        "HB",
-                        "V-2",
-                        "V-1",
-                        "V-0",
-                        "5VB",
-                        "5VA"
-                    ]
                 }
             },
             "required": [

@@ -508,7 +508,7 @@
                     "exclusiveMinimum": 0
                 },
                 "barrelOuterDiameter": {
-                    "description": "Barrel inner diameter for barrel power jacks, in m.",
+                    "description": "Barrel outer (jack bore) diameter for barrel power jacks, in m.",
                     "type": "number",
                     "exclusiveMinimum": 0
                 },

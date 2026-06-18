@@ -18,7 +18,7 @@ Mirrors the RAS/CAS datasheet pattern. Blocks:
 | `part` | partNumber, series, case, description, **matingPolarity** (male/female/hermaphroditic/genderless — physical polarity only; form factor is encoded by family + mountingStyle) |
 | `electrical` | ratedCurrentPerContact (+ reference temp), ratedVoltage, contactResistance, insulationResistance, dielectricWithstandingVoltage, **clearance**, **creepage** (IEC 60664 selection ratings) |
 | `mechanical` | positions, rows, pitch/rowPitch, orientation, **mountingStyle** (board-attach axis only), matingCycles, insertion/withdrawal/**contactNormalForce**, locking, body dimensions |
-| `material` | `*Ref` ids into `coas-materials` for contact base / housing / shield / seal, the `plating` stack (mating + termination + underplating, with thicknesses), UL-94 class |
+| `material` | `*Ref` ids into `coas-materials` for contact base / housing / shield / seal, plus the `plating` stack (mating + termination + underplating, with thicknesses). Material properties (UL-94, σ, εᵣ, …) live once on the referenced `coas-materials` record, never copied here |
 | `environmental` | operatingTemperature range, ipRating, sealed, **solderProcess** (solder axis only), **pollutionDegree** + **overvoltageCategory** (IEC 60664), MSL, RoHS/REACH |
 | `derating` | currentVsAmbient curve **and** currentVsEnergizedContacts curve, maxTemperatureRise — thermal-simulation validation target |
 | `familyDetails` | the discriminated union — see below |

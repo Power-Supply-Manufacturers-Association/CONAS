@@ -92,8 +92,7 @@
                         "terminationMaterialRef": "sn-tin",
                         "terminationThickness": 2.54e-6
                     },
-                    "housingMaterialRef": "pa66-gf30",
-                    "flammabilityRating": "V-0"
+                    "housingMaterialRef": "pa66-gf30"
                 },
                 "environmental": {
                     "operatingTemperature": {
@@ -139,7 +138,7 @@
             "boundingEnvelope": {
                 "length": 0.0127,
                 "width": 0.00508,
-                "height": 0.00254
+                "height": 0.0115
             },
             "matedHeight": 0.012,
             "pcbFootprint": {
