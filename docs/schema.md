@@ -4,6 +4,58 @@ Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic 
 
 `$id` namespace: `https://psma.com/coas/...`. Cross-repo `$ref`s resolve by absolute `$id` URI against the sibling repos checked out alongside this one (PEAS in particular). COAS reuses the PEAS shared primitives (`dimensionWithTolerance`, `manufacturerInfo`, `distributorInfo`, `datasheetInfoPartBase`, `datasheetInfoMechanical`, `multiPortOperatingPoint`, `outputBase`, `designRequirementsBase`) — it is **not** self-contained the way MAS is.
 
+## At a glance
+
+```
+COAS  (https://psma.com/coas/COAS.json)   { inputs, connector, outputs }
+│
+├─ inputs
+│   ├─ operatingPoints[]        → PEAS multiPortOperatingPoint (per-net current/voltage + ambient)
+│   └─ designRequirements        → designRequirementsBase + {connectorFamily, minimumPositions,
+│                                    requiredCurrentPerContact, requiredVoltageRating,
+│                                    minimumMatingCycles, requiredPitch, requiredIpRating, ...}
+│
+├─ connector
+│   ├─ manufacturerInfo
+│   │   ├─ name / orderCode / datasheetUrl / ...        (PEAS shared)
+│   │   └─ datasheetInfo                ◄── TIER 1: catalog / parametric
+│   │       ├─ part            { partNumber, series, case, matingPolarity* }
+│   │       ├─ electrical      { ratedCurrentPerContact, ratedVoltage, contactResistance,
+│   │       │                    insulationResistance, dielectricWithstandingVoltage,
+│   │       │                    clearance, creepage }            (IEC 60664)
+│   │       ├─ mechanical      { positions, rows, pitch, orientation, mountingStyle,
+│   │       │                    matingCycles, insertion/withdrawal/contactNormalForce, ... }
+│   │       ├─ material        { contactBaseMaterialRef, housingMaterialRef, shieldRef,
+│   │       │                    sealRef, plating{mating/termination/underplating + thickness} }
+│   │       ├─ environmental   { operatingTemperature, ipRating, sealed, solderProcess,
+│   │       │                    pollutionDegree, overvoltageCategory, MSL, RoHS/REACH }
+│   │       ├─ derating        { currentVsAmbient, currentVsEnergizedContacts, maxTempRise }
+│   │       └─ familyDetails   ◄── oneOf, discriminated by `family` const  (10 variants)
+│   │             pinHeaderSocket │ boardToBoard │ wireToBoard │ terminalBlock │ fpcFfc │
+│   │             cardEdge │ circular │ rf │ dataInterface │ power
+│   │             (each adds only its unique fields, e.g. rf → characteristicImpedance,
+│   │              frequencyRange, maxVswr; terminalBlock → clampType, wireGaugeRange)
+│   │
+│   ├─ distributorsInfo[]
+│   ├─ geometry                ◄── TIER 2: 3D (optional)
+│   │   { coordinateSystem, boundingEnvelope, matedHeight, keepOut, pcbFootprint,
+│   │     mountingFeatures, parametric{housingExtrusion, contactArray}, cadModels[] (STEP/glTF) }
+│   └─ contactSystem           ◄── TIER 2: simulation (optional)
+│       { contacts[]{id, signalRole, position, currentRating, contactResistance,
+│                    normalForce, materialRef, crossSection, pathLength},
+│         nets[] (contact→net map), matingInterface, shield }
+│
+└─ outputs[]   (outputs[i] ↔ operatingPoints[i], each with PEAS outputBase provenance)
+     contactLosses │ thermal │ currentDerating │ insulationStress │ signalIntegrity │ mechanicalLife
+
+coas-materials.json  ◄── shared general-purpose material registry (NDJSON, referenced by id)
+   { id, name, category: conductor|plating|dielectric|elastomer,
+     electrical{σ, TCR, εᵣ, dielectricStrength, ...}, thermal{k, cp, CTE, emissivity, ...},
+     mechanical{density, modulus, hardness, ...}, environmental{UL94, CTI, ...}, cost }
+```
+
+`*` `matingPolarity` is physical only (male/female/hermaphroditic/genderless); form factor is encoded by `family` + `mountingStyle`.
+
 ## Why a single `connector` field (not RAS-style per-type discriminators)
 
 RAS splits at the top level (`resistor` | `varistor`) because the two device types share almost no parametrics. Connectors are the opposite: every family shares a large parametric core (positions, pitch, current/voltage rating, mating cycles, plating, mount) and differs only in a small block. So COAS keeps **one** `connector` field and discriminates the **family internally** on `connector.datasheetInfo.familyDetails.family`. That field is the single source of truth for the family (catalog filtering reads it there).
