@@ -1,8 +1,8 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://psma.com/coas/COAS.json",
-    "title": "COAS",
-    "description": "Connector-family Agnostic Structure (COAS). A document carries inputs, exactly one 'connector' component, and outputs. Unlike RAS (which discriminates device type at the top level), COAS keeps a single 'connector' field and discriminates the family internally on connector.datasheetInfo.part.family, because the parametric core is shared across all connector families and only a small block differs per family.",
+    "$id": "https://psma.com/conas/CONAS.json",
+    "title": "CONAS",
+    "description": "Connector-family Agnostic Structure (CONAS). A document carries inputs, exactly one 'connector' component, and outputs. Unlike RAS (which discriminates device type at the top level), CONAS keeps a single 'connector' field and discriminates the family internally on connector.datasheetInfo.part.family, because the parametric core is shared across all connector families and only a small block differs per family.",
     "type": "object",
     "additionalProperties": false,
     "properties": {

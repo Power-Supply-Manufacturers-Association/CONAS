@@ -1,13 +1,13 @@
-# COAS — Connector Agnostic Structure
+# CONAS — Connector Agnostic Structure
 
-Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic **connectors**, part of the OpenConverters / PEAS family. Every valid COAS document is also a valid PEAS document (`inputs` + `connector` + `outputs`).
+Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic **connectors**, part of the OpenConverters / PEAS family. Every valid CONAS document is also a valid PEAS document (`inputs` + `connector` + `outputs`).
 
-`$id` namespace: `https://psma.com/coas/...`. Cross-repo `$ref`s resolve by absolute `$id` URI against the sibling repos checked out alongside this one (PEAS in particular). COAS reuses the PEAS shared primitives (`dimensionWithTolerance`, `manufacturerInfo`, `distributorInfo`, `datasheetInfoPartBase`, `datasheetInfoMechanical`, `multiPortOperatingPoint`, `outputBase`, `designRequirementsBase`) — it is **not** self-contained the way MAS is.
+`$id` namespace: `https://psma.com/conas/...`. Cross-repo `$ref`s resolve by absolute `$id` URI against the sibling repos checked out alongside this one (PEAS in particular). CONAS reuses the PEAS shared primitives (`dimensionWithTolerance`, `manufacturerInfo`, `distributorInfo`, `datasheetInfoPartBase`, `datasheetInfoMechanical`, `multiPortOperatingPoint`, `outputBase`, `designRequirementsBase`) — it is **not** self-contained the way MAS is.
 
 ## At a glance
 
 ```
-COAS  (https://psma.com/coas/COAS.json)   { inputs, connector, outputs }
+CONAS  (https://psma.com/conas/CONAS.json)   { inputs, connector, outputs }
 │
 ├─ inputs
 │   ├─ operatingPoints[]        → PEAS multiPortOperatingPoint (per-net current/voltage + ambient)
@@ -48,7 +48,7 @@ COAS  (https://psma.com/coas/COAS.json)   { inputs, connector, outputs }
 └─ outputs[]   (outputs[i] ↔ operatingPoints[i], each with PEAS outputBase provenance)
      contactLosses │ thermal │ currentDerating │ insulationStress │ signalIntegrity │ mechanicalLife
 
-coas-materials.json  ◄── shared general-purpose material registry (NDJSON, referenced by id)
+conas-materials.json  ◄── shared general-purpose material registry (NDJSON, referenced by id)
    { id, name, category: conductor|plating|dielectric|elastomer,
      electrical{σ, TCR, εᵣ, dielectricStrength, ...}, thermal{k, cp, CTE, emissivity, ...},
      mechanical{density, modulus, hardness, ...}, environmental{UL94, CTI, ...}, cost }
@@ -58,7 +58,7 @@ coas-materials.json  ◄── shared general-purpose material registry (NDJSON,
 
 ## Why a single `connector` field (not RAS-style per-type discriminators)
 
-RAS splits at the top level (`resistor` | `varistor`) because the two device types share almost no parametrics. Connectors are the opposite: every family shares a large parametric core (positions, pitch, current/voltage rating, mating cycles, plating, mount) and differs only in a small block. So COAS keeps **one** `connector` field and discriminates the **family internally** on `connector.datasheetInfo.familyDetails.family`. That field is the single source of truth for the family (catalog filtering reads it there).
+RAS splits at the top level (`resistor` | `varistor`) because the two device types share almost no parametrics. Connectors are the opposite: every family shares a large parametric core (positions, pitch, current/voltage rating, mating cycles, plating, mount) and differs only in a small block. So CONAS keeps **one** `connector` field and discriminates the **family internally** on `connector.datasheetInfo.familyDetails.family`. That field is the single source of truth for the family (catalog filtering reads it there).
 
 ## Two tiers
 
@@ -70,7 +70,7 @@ Mirrors the RAS/CAS datasheet pattern. Blocks:
 | `part` | partNumber, series, case, description, **matingPolarity** (male/female/hermaphroditic/genderless — physical polarity only; form factor is encoded by family + mountingStyle) |
 | `electrical` | ratedCurrentPerContact (+ reference temp), ratedVoltage, contactResistance, insulationResistance, dielectricWithstandingVoltage, **clearance**, **creepage** (IEC 60664 selection ratings) |
 | `mechanical` | positions, rows, pitch/rowPitch, orientation, **mountingStyle** (board-attach axis only), matingCycles, insertion/withdrawal/**contactNormalForce**, locking, body dimensions |
-| `material` | `*Ref` ids into `coas-materials` for contact base / housing / shield / seal, plus the `plating` stack (mating + termination + underplating, with thicknesses). Material properties (UL-94, σ, εᵣ, …) live once on the referenced `coas-materials` record, never copied here |
+| `material` | `*Ref` ids into `conas-materials` for contact base / housing / shield / seal, plus the `plating` stack (mating + termination + underplating, with thicknesses). Material properties (UL-94, σ, εᵣ, …) live once on the referenced `conas-materials` record, never copied here |
 | `environmental` | operatingTemperature range, ipRating, sealed, **solderProcess** (solder axis only), **pollutionDegree** + **overvoltageCategory** (IEC 60664), MSL, RoHS/REACH |
 | `derating` | currentVsAmbient curve **and** currentVsEnergizedContacts curve, maxTemperatureRise — thermal-simulation validation target |
 | `familyDetails` | the discriminated union — see below |
@@ -86,9 +86,9 @@ Optional, closed blocks populated only for parts you model in 3D, render, or sim
 - **`geometry`** — hybrid 3D body: `coordinateSystem` (units + origin datum + mate axis), `boundingEnvelope`, `matedHeight`, `keepOut`, `pcbFootprint` (pad/hole pattern, pad ids match contact ids), `mountingFeatures`, a `parametric` generator (housing extrusion profile + contact array) for the regular families, and `cadModels[]` references to external STEP/IGES/glTF/3MF/STL with units, LOD and checksum. Parametric and CAD are complementary — parametric reconstructs regular bodies; CAD carries the exact organic housing.
 - **`contactSystem`** — the conductive system (consumed by SI extraction and EM/thermal simulation): `contacts[]` (id, pinName, signalRole, position, per-contact currentRating/contactResistance/normalForce, base+plating material refs, cross-section, path length), `nets[]` (contact→net map for current/voltage injection), `matingInterface` (partner part, contact type, mate/unmate force, wipe), `shield`.
 
-## `coas-materials` — shared general-purpose material registry
+## `conas-materials` — shared general-purpose material registry
 
-Material properties are **not inlined per part**. They live in `coas-materials.json` records (stored as NDJSON in `data/coas-materials.ndjson`, like MAS `core_materials.ndjson`) and are referenced by `id` string. The registry is **general-purpose, not simulation-specific** — the same record serves datasheet documentation, part selection/filtering, cost/compliance, SPICE / signal-integrity extraction, and electromagnetic/thermal/structural simulation.
+Material properties are **not inlined per part**. They live in `conas-materials.json` records (stored as NDJSON in `data/conas-materials.ndjson`, like MAS `core_materials.ndjson`) and are referenced by `id` string. The registry is **general-purpose, not simulation-specific** — the same record serves datasheet documentation, part selection/filtering, cost/compliance, SPICE / signal-integrity extraction, and electromagnetic/thermal/structural simulation.
 
 Properties are grouped: `electrical`, `thermal`, `mechanical`, `environmental`, `cost`. `category` ∈ {`conductor`, `plating`, `dielectric`, `elastomer`} drives only the **required defining property**; everything else is optional, so a material catalogued for one purpose (e.g. electrical only) still validates.
 

@@ -1,8 +1,8 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://psma.com/coas/utils.json",
-    "title": "COAS utils",
-    "description": "Shared sub-schemas for COAS: the connector mechanical block, the deratingCurve primitive, the family-discriminated union (familyDetails), and the Tier-2 geometry and contactSystem blocks.",
+    "$id": "https://psma.com/conas/utils.json",
+    "title": "CONAS utils",
+    "description": "Shared sub-schemas for CONAS: the connector mechanical block, the deratingCurve primitive, the family-discriminated union (familyDetails), and the Tier-2 geometry and contactSystem blocks.",
     "$defs": {
         "mechanical": {
             "description": "Shared connector mechanical specs — extends the PEAS datasheetInfoMechanical body-dimension mixin. Positions/pitch/rows are here (shared across nearly all families); only genuinely family-unique mechanics live in familyDetails.",
@@ -939,7 +939,7 @@
                             "type": "boolean"
                         },
                         "materialRef": {
-                            "description": "coas-materials id of the shield metal.",
+                            "description": "conas-materials id of the shield metal.",
                             "type": "string"
                         },
                         "coverageFraction": {
@@ -1009,11 +1009,11 @@
                     "minimum": 0
                 },
                 "baseMaterialRef": {
-                    "description": "coas-materials id of this contact's base metal (overrides material.contactBaseMaterialRef when mixed).",
+                    "description": "conas-materials id of this contact's base metal (overrides material.contactBaseMaterialRef when mixed).",
                     "type": "string"
                 },
                 "platingMaterialRef": {
-                    "description": "coas-materials id of this contact's mating-area finish.",
+                    "description": "conas-materials id of this contact's mating-area finish.",
                     "type": "string"
                 },
                 "crossSection": {

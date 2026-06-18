@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate COAS schemas + example against the PSMA cross-repo registry."""
+"""Validate CONAS schemas + example against the PSMA cross-repo registry."""
 import json
 import glob
 import os
@@ -13,7 +13,7 @@ PSMA = os.path.dirname(HERE)
 
 def load_all():
     resources = []
-    for repo in ("PEAS", "MAS", "CAS", "SAS", "RAS", "COAS"):
+    for repo in ("PEAS", "MAS", "CAS", "SAS", "RAS", "CONAS"):
         for f in glob.glob(os.path.join(PSMA, repo, "schemas", "**", "*.json"), recursive=True):
             try:
                 doc = json.load(open(f))
@@ -36,9 +36,9 @@ def main():
         # touch every ref by validating a trivially-empty instance against resolvers lazily
         print(f"  schema OK: {os.path.relpath(f, HERE)}")
 
-    # 2. examples validate against COAS.json
-    coas = registry.get_or_retrieve("https://psma.com/coas/COAS.json").value.contents
-    validator = Draft202012Validator(coas, registry=registry)
+    # 2. examples validate against CONAS.json
+    conas = registry.get_or_retrieve("https://psma.com/conas/CONAS.json").value.contents
+    validator = Draft202012Validator(conas, registry=registry)
     for f in glob.glob(os.path.join(HERE, "examples", "*.json")):
         inst = json.load(open(f))
         errs = sorted(validator.iter_errors(inst), key=lambda e: e.path)

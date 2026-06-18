@@ -1,8 +1,8 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://psma.com/coas/connector.json",
+    "$id": "https://psma.com/conas/connector.json",
     "title": "connector",
-    "description": "Connector component data. Tier 1 (catalog/parametric) is datasheetInfo, which mirrors the RAS/CAS pattern and carries a family-discriminated union (datasheetInfo.familyDetails). Tier 2 (3D + simulation) adds geometry and contactSystem, both optional-but-closed so they never dilute the catalog layer. Material properties are NOT inlined here: parts reference shared general-purpose records in coas-materials.json by id string.",
+    "description": "Connector component data. Tier 1 (catalog/parametric) is datasheetInfo, which mirrors the RAS/CAS pattern and carries a family-discriminated union (datasheetInfo.familyDetails). Tier 2 (3D + simulation) adds geometry and contactSystem, both optional-but-closed so they never dilute the catalog layer. Material properties are NOT inlined here: parts reference shared general-purpose records in conas-materials.json by id string.",
     "type": "object",
     "additionalProperties": false,
     "properties": {
@@ -178,27 +178,27 @@
             ]
         },
         "material": {
-            "description": "Bill of materials by reference. Every *Ref is a string id into coas-materials.json (the shared general-purpose material registry); plating carries the local thickness because it varies per part even for the same alloy.",
+            "description": "Bill of materials by reference. Every *Ref is a string id into conas-materials.json (the shared general-purpose material registry); plating carries the local thickness because it varies per part even for the same alloy.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "contactBaseMaterialRef": {
-                    "description": "coas-materials id of the contact base metal (e.g. 'cuznSn-brass', 'cube-berylliumCopper').",
+                    "description": "conas-materials id of the contact base metal (e.g. 'cuznSn-brass', 'cube-berylliumCopper').",
                     "type": "string"
                 },
                 "contactPlating": {
                     "$ref": "#/$defs/plating"
                 },
                 "housingMaterialRef": {
-                    "description": "coas-materials id of the insulator/housing (e.g. 'lcp-gf30', 'pa66-gf25').",
+                    "description": "conas-materials id of the insulator/housing (e.g. 'lcp-gf30', 'pa66-gf25').",
                     "type": "string"
                 },
                 "shieldMaterialRef": {
-                    "description": "coas-materials id of the shield, when present.",
+                    "description": "conas-materials id of the shield, when present.",
                     "type": "string"
                 },
                 "sealingMaterialRef": {
-                    "description": "coas-materials id of the gasket/seal, when present.",
+                    "description": "conas-materials id of the gasket/seal, when present.",
                     "type": "string"
                 }
             },
@@ -208,12 +208,12 @@
             ]
         },
         "plating": {
-            "description": "Contact plating stack. Mating-area and termination-area finishes commonly differ; thicknesses are per part, the underlying metals reference coas-materials.",
+            "description": "Contact plating stack. Mating-area and termination-area finishes commonly differ; thicknesses are per part, the underlying metals reference conas-materials.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "matingAreaMaterialRef": {
-                    "description": "coas-materials id of the mating-area finish (e.g. 'au-gold', 'sn-tin').",
+                    "description": "conas-materials id of the mating-area finish (e.g. 'au-gold', 'sn-tin').",
                     "type": "string"
                 },
                 "matingAreaThickness": {
@@ -222,7 +222,7 @@
                     "minimum": 0
                 },
                 "terminationMaterialRef": {
-                    "description": "coas-materials id of the termination/solder-area finish.",
+                    "description": "conas-materials id of the termination/solder-area finish.",
                     "type": "string"
                 },
                 "terminationThickness": {
@@ -231,7 +231,7 @@
                     "minimum": 0
                 },
                 "underplatingMaterialRef": {
-                    "description": "coas-materials id of the underplating (typically nickel).",
+                    "description": "conas-materials id of the underplating (typically nickel).",
                     "type": "string"
                 },
                 "underplatingThickness": {
