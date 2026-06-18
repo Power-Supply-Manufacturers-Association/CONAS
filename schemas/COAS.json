@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/COAS.json",
+    "title": "COAS",
+    "description": "Connector-family Agnostic Structure (COAS). A document carries inputs, exactly one 'connector' component, and outputs. Unlike RAS (which discriminates device type at the top level), COAS keeps a single 'connector' field and discriminates the family internally on connector.datasheetInfo.part.family, because the parametric core is shared across all connector families and only a small block differs per family.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "inputs": {
+            "description": "Design requirements and operating points for this connector",
+            "title": "inputs",
+            "$ref": "./inputs.json"
+        },
+        "connector": {
+            "description": "Connector component data",
+            "title": "connector",
+            "$ref": "./connector.json"
+        },
+        "outputs": {
+            "description": "Computed results per operating point. outputs[i] aligns positionally with inputs.operatingPoints[i].",
+            "title": "outputs",
+            "type": "array",
+            "items": {
+                "$ref": "./outputs.json"
+            }
+        }
+    },
+    "required": [
+        "inputs",
+        "connector",
+        "outputs"
+    ]
+}

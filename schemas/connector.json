@@ -1,0 +1,368 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/connector.json",
+    "title": "connector",
+    "description": "Connector component data. Tier 1 (catalog/parametric) is datasheetInfo, which mirrors the RAS/CAS pattern and carries a family-discriminated union (datasheetInfo.familyDetails). Tier 2 (3D + simulation) adds geometry and contactSystem, both optional-but-closed so they never dilute the catalog layer. Material properties are NOT inlined here: parts reference shared general-purpose records in coas-materials.json by id string.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "manufacturerInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/name"
+                },
+                "reference": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/reference"
+                },
+                "status": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/status"
+                },
+                "description": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/description"
+                },
+                "orderCode": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/orderCode"
+                },
+                "datasheetUrl": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/datasheetUrl"
+                },
+                "family": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/family"
+                },
+                "datasheetInfo": {
+                    "$ref": "#/$defs/datasheetInfo"
+                }
+            },
+            "required": [
+                "name",
+                "datasheetInfo"
+            ]
+        },
+        "distributorsInfo": {
+            "description": "Where to buy this component",
+            "type": "array",
+            "items": {
+                "$ref": "https://psma.com/peas/utils.json#/$defs/distributorInfo"
+            }
+        },
+        "geometry": {
+            "description": "Tier 2. 3D representation of the real connector body for MCAD, visualization and simulation: bounding envelope, PCB footprint, mounting features, a hybrid parametric generator, and references to external CAD (STEP/glTF/...). Optional; populate only for parts you model or render.",
+            "$ref": "./utils.json#/$defs/geometry"
+        },
+        "contactSystem": {
+            "description": "Tier 2. The conductive system: per-contact geometry, material/plating references, net-to-contact mapping, and the mating interface. Consumed by signal-integrity extraction and electromagnetic/thermal simulation. Optional.",
+            "$ref": "./utils.json#/$defs/contactSystem"
+        }
+    },
+    "required": [
+        "manufacturerInfo"
+    ],
+    "$defs": {
+        "datasheetInfo": {
+            "description": "All parametric information extracted from the connector datasheet. familyDetails carries the per-family discriminated union; everything else is shared across all connector families.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "part": {
+                    "$ref": "#/$defs/part"
+                },
+                "electrical": {
+                    "$ref": "#/$defs/electrical"
+                },
+                "mechanical": {
+                    "$ref": "./utils.json#/$defs/mechanical"
+                },
+                "material": {
+                    "$ref": "#/$defs/material"
+                },
+                "environmental": {
+                    "$ref": "#/$defs/environmental"
+                },
+                "derating": {
+                    "$ref": "#/$defs/derating"
+                },
+                "familyDetails": {
+                    "$ref": "./utils.json#/$defs/familyDetails"
+                }
+            },
+            "required": [
+                "part",
+                "electrical",
+                "mechanical",
+                "familyDetails"
+            ]
+        },
+        "part": {
+            "description": "Basic connector part identification. The connector family is NOT here — it is the discriminator on familyDetails (single source of truth).",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/datasheetInfoPartBase"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "partNumber": {},
+                        "series": {},
+                        "case": {},
+                        "description": {},
+                        "matingPolarity": {
+                            "description": "Physical mating polarity (which side carries the protruding contacts). Form factor / role is encoded by the connector family and mounting style, not here.",
+                            "type": "string",
+                            "enum": [
+                                "male",
+                                "female",
+                                "hermaphroditic",
+                                "genderless"
+                            ]
+                        },
+                        "matchcodeDescription": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "matingPolarity"
+                    ]
+                }
+            ]
+        },
+        "electrical": {
+            "description": "Shared connector electrical characteristics. Family-specific electrical values (RF impedance, FFC contact pitch current, ...) live in familyDetails.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ratedCurrentPerContact": {
+                    "description": "Maximum continuous current per contact at reference ambient, in A.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "ratedCurrentReferenceTemperature": {
+                    "description": "Ambient temperature the per-contact current rating is referenced to, in Celsius.",
+                    "type": "number"
+                },
+                "ratedVoltage": {
+                    "description": "Maximum continuous working voltage, in V.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "contactResistance": {
+                    "description": "Contact (mated pair) resistance, in Ohm. Dominant self-heating source; constriction + film resistance.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                },
+                "insulationResistance": {
+                    "description": "Insulation resistance between contacts, in Ohm.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "dielectricWithstandingVoltage": {
+                    "description": "Dielectric withstanding (proof) voltage, in V.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "clearance": {
+                    "description": "Shortest through-air distance between adjacent contacts (or contact and shield), in m. Intrinsic IEC 60664 selection rating.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "creepage": {
+                    "description": "Shortest surface distance between adjacent contacts (or contact and shield), in m. Intrinsic IEC 60664 selection rating.",
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "ratedCurrentPerContact",
+                "ratedVoltage"
+            ]
+        },
+        "material": {
+            "description": "Bill of materials by reference. Every *Ref is a string id into coas-materials.json (the shared general-purpose material registry); plating carries the local thickness because it varies per part even for the same alloy.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "contactBaseMaterialRef": {
+                    "description": "coas-materials id of the contact base metal (e.g. 'cuznSn-brass', 'cube-berylliumCopper').",
+                    "type": "string"
+                },
+                "contactPlating": {
+                    "$ref": "#/$defs/plating"
+                },
+                "housingMaterialRef": {
+                    "description": "coas-materials id of the insulator/housing (e.g. 'lcp-gf30', 'pa66-gf25').",
+                    "type": "string"
+                },
+                "shieldMaterialRef": {
+                    "description": "coas-materials id of the shield, when present.",
+                    "type": "string"
+                },
+                "sealingMaterialRef": {
+                    "description": "coas-materials id of the gasket/seal, when present.",
+                    "type": "string"
+                },
+                "flammabilityRating": {
+                    "description": "Housing flammability class per UL 94.",
+                    "type": "string",
+                    "enum": [
+                        "HB",
+                        "V-2",
+                        "V-1",
+                        "V-0",
+                        "5VB",
+                        "5VA"
+                    ]
+                }
+            },
+            "required": [
+                "contactBaseMaterialRef",
+                "housingMaterialRef"
+            ]
+        },
+        "plating": {
+            "description": "Contact plating stack. Mating-area and termination-area finishes commonly differ; thicknesses are per part, the underlying metals reference coas-materials.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "matingAreaMaterialRef": {
+                    "description": "coas-materials id of the mating-area finish (e.g. 'au-gold', 'sn-tin').",
+                    "type": "string"
+                },
+                "matingAreaThickness": {
+                    "description": "Mating-area plating thickness, in m.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "terminationMaterialRef": {
+                    "description": "coas-materials id of the termination/solder-area finish.",
+                    "type": "string"
+                },
+                "terminationThickness": {
+                    "description": "Termination plating thickness, in m.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "underplatingMaterialRef": {
+                    "description": "coas-materials id of the underplating (typically nickel).",
+                    "type": "string"
+                },
+                "underplatingThickness": {
+                    "description": "Underplating thickness, in m.",
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "matingAreaMaterialRef"
+            ]
+        },
+        "environmental": {
+            "description": "Environmental and process ratings.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "operatingTemperature": {
+                    "description": "Operating temperature range, in Celsius.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "minimum": {
+                            "type": "number"
+                        },
+                        "maximum": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "minimum",
+                        "maximum"
+                    ]
+                },
+                "ipRating": {
+                    "description": "Ingress-protection code per IEC 60529 (e.g. 'IP20', 'IP67', 'IP6K9K').",
+                    "type": "string"
+                },
+                "sealed": {
+                    "description": "Whether the connector provides environmental sealing when mated.",
+                    "type": "boolean"
+                },
+                "solderProcess": {
+                    "description": "Compatible solder process (only meaningful for soldered board-attach styles; board-attach method itself is mechanical.mountingStyle, wire-side termination is in familyDetails).",
+                    "type": "string",
+                    "enum": [
+                        "reflow",
+                        "wave",
+                        "selective",
+                        "throughHoleReflow",
+                        "handSolder"
+                    ]
+                },
+                "pollutionDegree": {
+                    "description": "Pollution degree the part is rated for, per IEC 60664. Sets the clearance/creepage interpretation.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/pollutionDegree"
+                },
+                "overvoltageCategory": {
+                    "description": "Overvoltage (installation) category, per IEC 60664.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/overvoltageCategory"
+                },
+                "moistureSensitivityLevel": {
+                    "description": "JEDEC J-STD-020 MSL, 1..6.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6
+                },
+                "rohsCompliant": {
+                    "type": "boolean"
+                },
+                "reachCompliant": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "derating": {
+            "description": "Current-derating data from the datasheet. Connectors derate on BOTH ambient temperature and the number of simultaneously energized contacts; thermal simulation reproduces these curves.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "currentVsAmbient": {
+                    "description": "Per-contact current derating fraction vs ambient temperature.",
+                    "$ref": "./utils.json#/$defs/deratingCurve"
+                },
+                "currentVsEnergizedContacts": {
+                    "description": "Per-contact current derating fraction vs the fraction (0..1) of contacts simultaneously loaded.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "energizedFraction": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "minItems": 2
+                        },
+                        "amplitude": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "minItems": 2
+                        }
+                    },
+                    "required": [
+                        "energizedFraction",
+                        "amplitude"
+                    ]
+                },
+                "maxTemperatureRise": {
+                    "description": "Maximum allowed contact temperature rise at rated current, in K (e.g. 30 K T-rise limit).",
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/inputs/designRequirements.json",
+    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "title": "designRequirements",
+    "description": "Requirements a COAS connector must comply with. Built on the PEAS designRequirementsBase mixin. The connectorFamily field aligns with connector.datasheetInfo.familyDetails.family and may constrain candidate selection.",
+    "allOf": [
+        {
+            "$ref": "https://psma.com/peas/utils.json#/$defs/designRequirementsBase"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "connectorFamily": {
+                    "description": "Required connector family (matches familyDetails.family). Omit to leave unconstrained.",
+                    "type": "string",
+                    "enum": [
+                        "pinHeaderSocket",
+                        "boardToBoard",
+                        "wireToBoard",
+                        "terminalBlock",
+                        "fpcFfc",
+                        "cardEdge",
+                        "circular",
+                        "rf",
+                        "dataInterface",
+                        "power"
+                    ]
+                },
+                "minimumPositions": {
+                    "description": "Minimum number of contact positions required.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "requiredCurrentPerContact": {
+                    "description": "Required continuous current per contact, in A.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "requiredVoltageRating": {
+                    "description": "Required working-voltage rating, in V.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "minimumMatingCycles": {
+                    "description": "Required durability, in mate/unmate cycles.",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "requiredPitch": {
+                    "description": "Required contact pitch, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "requiredIpRating": {
+                    "description": "Minimum ingress-protection code (e.g. 'IP67').",
+                    "type": "string"
+                },
+                "ambientTemperatureRange": {
+                    "description": "Required operating ambient range, in Celsius.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "minimum": {
+                            "type": "number"
+                        },
+                        "maximum": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "unevaluatedProperties": false
+}

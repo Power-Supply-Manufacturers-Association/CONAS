@@ -1,0 +1,243 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/outputs.json",
+    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "title": "outputs",
+    "description": "Outputs computed for one operating point of a connector. Each named block is independently optional and carries the PEAS outputBase {origin, methodUsed} provenance shell. outputs[i] aligns positionally with inputs.operatingPoints[i]. The thermal/derating blocks are what an FEA run (fed by contactSystem + coas-materials) produces and what the datasheet derating curve validates.",
+    "type": "object",
+    "properties": {
+        "contactLosses": {
+            "description": "Joule heating in the contact system at this operating point.",
+            "$ref": "#/$defs/contactLossesOutput"
+        },
+        "thermal": {
+            "description": "Contact and body temperatures reached under the operating-point losses.",
+            "$ref": "#/$defs/thermalOutput"
+        },
+        "currentDerating": {
+            "description": "Per-contact current headroom against the derating limit at the operating ambient and load fill.",
+            "$ref": "#/$defs/currentDeratingOutput"
+        },
+        "insulationStress": {
+            "description": "Applied voltage stress vs dielectric/insulation limits.",
+            "$ref": "#/$defs/insulationStressOutput"
+        },
+        "signalIntegrity": {
+            "description": "High-frequency behaviour (controlled-impedance / data / RF connectors).",
+            "$ref": "#/$defs/signalIntegrityOutput"
+        },
+        "mechanicalLife": {
+            "description": "Remaining mating life under the duty assumed for this operating point.",
+            "$ref": "#/$defs/mechanicalLifeOutput"
+        }
+    },
+    "required": [],
+    "$defs": {
+        "contactLossesOutput": {
+            "title": "contactLossesOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "totalDissipation": {
+                            "description": "Total power dissipated across all contacts, in W.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "worstContactDissipation": {
+                            "description": "Dissipation in the hottest single contact, in W.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "perContact": {
+                            "description": "Optional per-contact breakdown.",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "contactId": {
+                                        "type": "string"
+                                    },
+                                    "dissipation": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "current": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    }
+                                },
+                                "required": [
+                                    "contactId",
+                                    "dissipation"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "totalDissipation"
+                    ]
+                }
+            ]
+        },
+        "thermalOutput": {
+            "title": "thermalOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "ambientTemperature": {
+                            "type": "number"
+                        },
+                        "contactTemperatureRise": {
+                            "description": "Hottest contact temperature rise above ambient, in K.",
+                            "type": "number"
+                        },
+                        "hotSpotTemperature": {
+                            "description": "Hottest predicted temperature in the assembly, in Celsius.",
+                            "type": "number"
+                        },
+                        "hotSpotContactId": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "hotSpotTemperature"
+                    ]
+                }
+            ]
+        },
+        "currentDeratingOutput": {
+            "title": "currentDeratingOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "appliedCurrentPerContact": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "deratedCurrentLimit": {
+                            "description": "Allowed per-contact current at this ambient and load fill, in A.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "margin": {
+                            "description": "1 - applied/limit. Negative means the rating is exceeded.",
+                            "type": "number"
+                        },
+                        "passes": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "passes"
+                    ]
+                }
+            ]
+        },
+        "insulationStressOutput": {
+            "title": "insulationStressOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "appliedVoltage": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "clearance": {
+                            "description": "Clearance distance used, in m.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "creepage": {
+                            "description": "Creepage distance used, in m.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "margin": {
+                            "type": "number"
+                        },
+                        "passes": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "passes"
+                    ]
+                }
+            ]
+        },
+        "signalIntegrityOutput": {
+            "title": "signalIntegrityOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "characteristicImpedance": {
+                            "description": "Extracted characteristic impedance, in Ohm.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "insertionLoss": {
+                            "description": "Insertion loss at the evaluation frequency, in dB.",
+                            "type": "number"
+                        },
+                        "returnLoss": {
+                            "description": "Return loss at the evaluation frequency, in dB.",
+                            "type": "number"
+                        },
+                        "evaluationFrequency": {
+                            "description": "Frequency at which the SI metrics are reported, in Hz.",
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    }
+                }
+            ]
+        },
+        "mechanicalLifeOutput": {
+            "title": "mechanicalLifeOutput",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "consumedCycles": {
+                            "description": "Mate/unmate cycles consumed by the assumed duty. Rated durability is the datasheet mechanical.matingCycles.",
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "remainingCycles": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "required": [
+                        "remainingCycles"
+                    ]
+                }
+            ]
+        }
+    },
+    "additionalProperties": false
+}

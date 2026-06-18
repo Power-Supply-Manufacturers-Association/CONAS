@@ -1,0 +1,30 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/inputs.json",
+    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "title": "inputs",
+    "description": "The inputs used to design or evaluate a Connector. Mirrors the MAS / CAS / RAS inputs structure (operatingPoints[] + designRequirements). Connectors are multi-port, so operating points use the PEAS multiPortOperatingPoint template (per-net current/voltage) rather than the two-terminal template.",
+    "type": "object",
+    "properties": {
+        "operatingPoints": {
+            "description": "Operating points to evaluate. Each point carries per-net excitation (current, voltage) plus ambient conditions.",
+            "title": "operatingPoints",
+            "type": "array",
+            "items": {
+                "$ref": "https://psma.com/peas/inputs/multiPortOperatingPoint.json"
+            },
+            "minItems": 1
+        },
+        "designRequirements": {
+            "description": "Data describing the design requirements",
+            "title": "designRequirements",
+            "$ref": "./inputs/designRequirements.json"
+        }
+    },
+    "required": [
+        "operatingPoints",
+        "designRequirements"
+    ],
+    "$defs": {},
+    "additionalProperties": false
+}

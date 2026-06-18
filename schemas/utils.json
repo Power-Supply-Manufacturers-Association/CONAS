@@ -1,0 +1,1051 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/utils.json",
+    "title": "COAS utils",
+    "description": "Shared sub-schemas for COAS: the connector mechanical block, the deratingCurve primitive, the family-discriminated union (familyDetails), and the Tier-2 geometry and contactSystem blocks.",
+    "$defs": {
+        "mechanical": {
+            "description": "Shared connector mechanical specs — extends the PEAS datasheetInfoMechanical body-dimension mixin. Positions/pitch/rows are here (shared across nearly all families); only genuinely family-unique mechanics live in familyDetails.",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/datasheetInfoMechanical"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "length": {},
+                        "width": {},
+                        "height": {},
+                        "diameter": {},
+                        "weight": {},
+                        "shapeType": {},
+                        "assemblyType": {},
+                        "positions": {
+                            "description": "Number of contact positions (pole count / way count).",
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "rows": {
+                            "description": "Number of contact rows.",
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "pitch": {
+                            "description": "Contact-to-contact pitch, in m.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "rowPitch": {
+                            "description": "Row-to-row pitch, in m (when it differs from contact pitch).",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "orientation": {
+                            "description": "Mating-axis orientation relative to the PCB.",
+                            "type": "string",
+                            "enum": [
+                                "vertical",
+                                "rightAngle",
+                                "horizontal",
+                                "mezzanine",
+                                "edge",
+                                "cable"
+                            ]
+                        },
+                        "mountingStyle": {
+                            "description": "How the connector's board side attaches to the PCB (one orthogonal axis: board-attach method). The solder process is environmental.solderProcess; wire-side termination is in familyDetails.",
+                            "type": "string",
+                            "enum": [
+                                "tht",
+                                "smt",
+                                "pressFit",
+                                "skedd",
+                                "panel",
+                                "cable"
+                            ]
+                        },
+                        "matingCycles": {
+                            "description": "Rated durability, in mate/unmate cycles.",
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "insertionForce": {
+                            "description": "Maximum mating (insertion) force, in N.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "withdrawalForce": {
+                            "description": "Minimum unmating (withdrawal) force, in N.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "contactNormalForce": {
+                            "description": "Contact normal force, in N. Drives constriction resistance and therefore self-heating.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "locking": {
+                            "description": "Retention/latching mechanism.",
+                            "type": "string",
+                            "enum": [
+                                "none",
+                                "latch",
+                                "friction",
+                                "screwLock",
+                                "bayonet",
+                                "boardLock",
+                                "cpa",
+                                "tpa"
+                            ]
+                        },
+                        "case": {
+                            "type": "string",
+                            "description": "Package/footprint code where the manufacturer publishes one."
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "deratingCurve": {
+            "description": "Derating curve as paired arrays. Index-aligned: amplitude[i] is the rated fraction (0..1) at temperature[i] in Celsius.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "temperature": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "minItems": 2
+                },
+                "amplitude": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "minItems": 2
+                }
+            },
+            "required": [
+                "temperature",
+                "amplitude"
+            ]
+        },
+        "familyDetails": {
+            "description": "Family-discriminated union. The 'family' const selects the variant and is the single source of truth for the connector family (catalog filtering reads it here). Each variant is a closed object carrying only what is unique to that family; everything shared lives in electrical/mechanical/material.",
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/familyPinHeaderSocket"
+                },
+                {
+                    "$ref": "#/$defs/familyBoardToBoard"
+                },
+                {
+                    "$ref": "#/$defs/familyWireToBoard"
+                },
+                {
+                    "$ref": "#/$defs/familyTerminalBlock"
+                },
+                {
+                    "$ref": "#/$defs/familyFpcFfc"
+                },
+                {
+                    "$ref": "#/$defs/familyCardEdge"
+                },
+                {
+                    "$ref": "#/$defs/familyCircular"
+                },
+                {
+                    "$ref": "#/$defs/familyRf"
+                },
+                {
+                    "$ref": "#/$defs/familyDataInterface"
+                },
+                {
+                    "$ref": "#/$defs/familyPower"
+                }
+            ]
+        },
+        "familyPinHeaderSocket": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "pinHeaderSocket"
+                },
+                "pinStyle": {
+                    "type": "string",
+                    "enum": [
+                        "squarePin",
+                        "roundPin",
+                        "stamped",
+                        "machined"
+                    ]
+                },
+                "tailLength": {
+                    "description": "Solder-tail length, in m.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "stackable": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyBoardToBoard": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "boardToBoard"
+                },
+                "stackHeight": {
+                    "description": "Mated board-to-board stack height, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "stackTolerance": {
+                    "description": "Allowed stack-height variation (floating), in m.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "mezzanine": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyWireToBoard": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "wireToBoard"
+                },
+                "termination": {
+                    "description": "Wire-side termination method (board-attach is mechanical.mountingStyle).",
+                    "type": "string",
+                    "enum": [
+                        "crimp",
+                        "idc",
+                        "poke-in",
+                        "solderCup"
+                    ]
+                },
+                "wireGaugeRange": {
+                    "$ref": "#/$defs/wireGaugeRange"
+                },
+                "secondaryLock": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyTerminalBlock": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "terminalBlock"
+                },
+                "clampType": {
+                    "type": "string",
+                    "enum": [
+                        "screw",
+                        "springCage",
+                        "pushIn",
+                        "insulationDisplacement",
+                        "barrier"
+                    ]
+                },
+                "levels": {
+                    "description": "Number of wiring levels (decks).",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "wireGaugeRange": {
+                    "$ref": "#/$defs/wireGaugeRange"
+                },
+                "wireEntryAngle": {
+                    "description": "Wire entry angle relative to the board, in degrees.",
+                    "type": "number"
+                },
+                "pluggable": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyFpcFfc": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "fpcFfc"
+                },
+                "actuatorType": {
+                    "type": "string",
+                    "enum": [
+                        "zif",
+                        "nonZif",
+                        "flip",
+                        "slide",
+                        "backflip"
+                    ]
+                },
+                "contactSide": {
+                    "type": "string",
+                    "enum": [
+                        "top",
+                        "bottom",
+                        "dual"
+                    ]
+                },
+                "flexThickness": {
+                    "description": "Accepted FFC/FPC thickness, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyCardEdge": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "cardEdge"
+                },
+                "slotKeying": {
+                    "description": "Keying/notch positions identifying card orientation.",
+                    "type": "string"
+                },
+                "cardThickness": {
+                    "description": "Accepted card thickness, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "wipeLength": {
+                    "description": "Contact wipe length on insertion, in m.",
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyCircular": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "circular"
+                },
+                "shellSize": {
+                    "description": "Manufacturer shell size code (e.g. 'M8', 'M12', '13').",
+                    "type": "string"
+                },
+                "coding": {
+                    "description": "Keying/coding (e.g. 'A', 'B', 'D', 'X', 'T', 'S').",
+                    "type": "string"
+                },
+                "couplingType": {
+                    "type": "string",
+                    "enum": [
+                        "threaded",
+                        "bayonet",
+                        "pushPull",
+                        "snap"
+                    ]
+                },
+                "shielded": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyRf": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "rf"
+                },
+                "interface": {
+                    "description": "RF interface standard (e.g. 'SMA', 'SMP', 'U.FL', 'BNC', 'N', 'TNC').",
+                    "type": "string"
+                },
+                "characteristicImpedance": {
+                    "description": "Characteristic impedance, in Ohm (typically 50 or 75).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "frequencyRange": {
+                    "description": "Usable frequency range, in Hz.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "minimum": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "maximum": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    },
+                    "required": [
+                        "maximum"
+                    ]
+                },
+                "maxVswr": {
+                    "description": "Maximum voltage standing-wave ratio over the band.",
+                    "type": "number",
+                    "minimum": 1
+                },
+                "bodyStyle": {
+                    "type": "string",
+                    "enum": [
+                        "straight",
+                        "rightAngle",
+                        "bulkhead",
+                        "edgeMount",
+                        "endLaunch"
+                    ]
+                }
+            },
+            "required": [
+                "family",
+                "characteristicImpedance"
+            ]
+        },
+        "familyDataInterface": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "dataInterface"
+                },
+                "interfaceStandard": {
+                    "description": "Standardized data interface (e.g. 'USB-C', 'USB-A', 'RJ45', 'HDMI', 'DisplayPort', 'microSD').",
+                    "type": "string"
+                },
+                "ports": {
+                    "description": "Number of ganged ports.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "shielded": {
+                    "type": "boolean"
+                },
+                "characteristicImpedance": {
+                    "description": "Datasheet single-ended/differential characteristic impedance, in Ohm (controlled-impedance high-speed interfaces).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "integratedMagnetics": {
+                    "description": "Whether LAN magnetics are integrated (MagJack-style). When true, see the MAS document for the magnetic sub-component.",
+                    "type": "boolean"
+                },
+                "integratedLeds": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family",
+                "interfaceStandard"
+            ]
+        },
+        "familyPower": {
+            "description": "Dedicated power connectors and DC power jacks (e.g. WR-MPC/NPC high-current, WR-DC barrel jacks). Distinguished from signal families by per-contact current in the tens of amperes and, for barrel jacks, a coaxial power interface.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "power"
+                },
+                "powerStyle": {
+                    "type": "string",
+                    "enum": [
+                        "highCurrentBlade",
+                        "powerModule",
+                        "barrelJack",
+                        "busbar",
+                        "quickConnect"
+                    ]
+                },
+                "termination": {
+                    "description": "Power/wire-side termination method (board-attach is mechanical.mountingStyle).",
+                    "type": "string",
+                    "enum": [
+                        "crimp",
+                        "screw",
+                        "busbar",
+                        "fastTab",
+                        "ringLug"
+                    ]
+                },
+                "barrelInnerDiameter": {
+                    "description": "Centre-pin diameter for barrel power jacks, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "barrelOuterDiameter": {
+                    "description": "Barrel inner diameter for barrel power jacks, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "wireGaugeRange": {
+                    "$ref": "#/$defs/wireGaugeRange"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "wireGaugeRange": {
+            "description": "Accepted conductor cross-section range. Provide AWG and/or mm^2; both are common across regions.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "minimumAwg": {
+                    "type": "number"
+                },
+                "maximumAwg": {
+                    "type": "number"
+                },
+                "minimumAreaMm2": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "maximumAreaMm2": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            }
+        },
+        "vector3": {
+            "description": "A 3D point/vector in the part coordinate system, in m.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "x",
+                "y",
+                "z"
+            ]
+        },
+        "geometry": {
+            "description": "Tier 2. Hybrid 3D representation for MCAD, visualization and simulation: a parametric generator for the regular families plus references to external CAD for the exact body. boundingEnvelope, pcbFootprint and mountingFeatures are always meaningful; parametric and cadModels are alternative/complementary body sources.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "coordinateSystem": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "units": {
+                            "description": "Length unit of all geometry fields. SI (m) is canonical; declare it explicitly because CAD exports vary.",
+                            "type": "string",
+                            "enum": [
+                                "m",
+                                "mm",
+                                "inch"
+                            ]
+                        },
+                        "originDatum": {
+                            "description": "What the origin (0,0,0) is anchored to.",
+                            "type": "string",
+                            "enum": [
+                                "pin1",
+                                "bodyCenter",
+                                "footprintCenter",
+                                "mountingDatum",
+                                "mateFace"
+                            ]
+                        },
+                        "mateAxis": {
+                            "description": "Axis along which the connector mates.",
+                            "type": "string",
+                            "enum": [
+                                "+x",
+                                "-x",
+                                "+y",
+                                "-y",
+                                "+z",
+                                "-z"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "units",
+                        "originDatum"
+                    ]
+                },
+                "boundingEnvelope": {
+                    "description": "Overall body extents (unmated), in m.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "length": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "width": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "height": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    },
+                    "required": [
+                        "length",
+                        "width",
+                        "height"
+                    ]
+                },
+                "matedHeight": {
+                    "description": "Profile height above board when mated, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "keepOut": {
+                    "description": "Component keep-out / courtyard extents around the body, in m.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "length": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "width": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "height": {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    }
+                },
+                "pcbFootprint": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "pattern": {
+                            "type": "string",
+                            "enum": [
+                                "singleRow",
+                                "dualRow",
+                                "grid",
+                                "custom"
+                            ]
+                        },
+                        "pads": {
+                            "description": "Land/hole pattern. Each pad's id matches a contactSystem contact id where applicable.",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "x": {
+                                        "type": "number"
+                                    },
+                                    "y": {
+                                        "type": "number"
+                                    },
+                                    "shape": {
+                                        "type": "string",
+                                        "enum": [
+                                            "round",
+                                            "oval",
+                                            "rectangle",
+                                            "roundedRectangle",
+                                            "plated-hole",
+                                            "non-plated-hole"
+                                        ]
+                                    },
+                                    "width": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "drill": {
+                                        "description": "Drill diameter for THT/press-fit pads, in m.",
+                                        "type": "number",
+                                        "minimum": 0
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "x",
+                                    "y",
+                                    "shape"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "mountingFeatures": {
+                    "description": "Board locks, pegs, screw bosses, latches that anchor the body.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "boardLock",
+                                    "peg",
+                                    "screwBoss",
+                                    "latch",
+                                    "thread",
+                                    "snap"
+                                ]
+                            },
+                            "position": {
+                                "$ref": "#/$defs/vector3"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "position"
+                        ]
+                    }
+                },
+                "parametric": {
+                    "description": "Generative description sufficient to reconstruct the body of a regular family (headers, board-to-board, card edge). For organic housings, leave empty and rely on cadModels.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "housingExtrusion": {
+                            "description": "Insulator body as an extruded profile.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "profile": {
+                                    "description": "Closed 2D outline as [x,y] vertices in the mate-face plane, in m.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number"
+                                        },
+                                        "minItems": 2,
+                                        "maxItems": 2
+                                    },
+                                    "minItems": 3
+                                },
+                                "length": {
+                                    "description": "Extrusion length along the mate axis, in m.",
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                }
+                            },
+                            "required": [
+                                "profile",
+                                "length"
+                            ]
+                        },
+                        "contactArray": {
+                            "description": "Regular grid placement of contacts; multiplies a single contact prototype.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "pitchX": {
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                },
+                                "pitchY": {
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                },
+                                "countX": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                },
+                                "countY": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                },
+                                "origin": {
+                                    "$ref": "#/$defs/vector3"
+                                }
+                            },
+                            "required": [
+                                "countX",
+                                "countY"
+                            ]
+                        }
+                    }
+                },
+                "cadModels": {
+                    "description": "References to external CAD for the exact body. STEP/IGES for MCAD, glTF/3MF for visualization, STL for meshing.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "format": {
+                                "type": "string",
+                                "enum": [
+                                    "STEP",
+                                    "IGES",
+                                    "glTF",
+                                    "3MF",
+                                    "STL",
+                                    "Parasolid"
+                                ]
+                            },
+                            "uri": {
+                                "type": "string"
+                            },
+                            "units": {
+                                "type": "string",
+                                "enum": [
+                                    "m",
+                                    "mm",
+                                    "inch"
+                                ]
+                            },
+                            "lod": {
+                                "description": "Level of detail / mating-condition the model represents.",
+                                "type": "string",
+                                "enum": [
+                                    "full",
+                                    "simplified",
+                                    "envelope",
+                                    "mated",
+                                    "unmated"
+                                ]
+                            },
+                            "checksum": {
+                                "description": "Content hash (e.g. 'sha256:...') for integrity/caching.",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "format",
+                            "uri"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "coordinateSystem",
+                "boundingEnvelope"
+            ]
+        },
+        "contactSystem": {
+            "description": "Tier 2. The conductive system: every contact's geometry and material/plating references, the net-to-contact map (used to inject current in electromagnetic/thermal simulation), the shield, and the mating interface.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "contacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/contact"
+                    },
+                    "minItems": 1
+                },
+                "nets": {
+                    "description": "Electrical nets grouping contacts. Used to inject current/voltage boundary conditions in EM/thermal FEA.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "contactIds": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "contactIds"
+                        ]
+                    }
+                },
+                "matingInterface": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "partnerPartNumber": {
+                            "description": "Recommended mating counterpart part number.",
+                            "type": "string"
+                        },
+                        "contactType": {
+                            "description": "Contact-beam geometry of the mating interface. Whole-connector mate/unmate forces are mechanical.insertionForce/withdrawalForce; wipe length is family-specific (e.g. familyCardEdge.wipeLength).",
+                            "type": "string",
+                            "enum": [
+                                "pinSocket",
+                                "blade",
+                                "tuningFork",
+                                "cantileverBeam",
+                                "hyperboloid",
+                                "springFinger",
+                                "poke"
+                            ]
+                        }
+                    }
+                },
+                "shield": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "present": {
+                            "type": "boolean"
+                        },
+                        "materialRef": {
+                            "description": "coas-materials id of the shield metal.",
+                            "type": "string"
+                        },
+                        "coverageFraction": {
+                            "description": "Fraction (0..1) of the body enclosed by shield.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "groundedContactIds": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "present"
+                    ]
+                }
+            },
+            "required": [
+                "contacts"
+            ]
+        },
+        "contact": {
+            "description": "One contact of the connector, with the geometry and material references FEA needs.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "description": "Stable contact id, matched by nets, footprint pads and shield grounding.",
+                    "type": "string"
+                },
+                "pinName": {
+                    "description": "Datasheet pin label (e.g. 'A1', 'VBUS', '3').",
+                    "type": "string"
+                },
+                "signalRole": {
+                    "type": "string",
+                    "enum": [
+                        "signal",
+                        "power",
+                        "ground",
+                        "shield",
+                        "differentialP",
+                        "differentialN",
+                        "noConnect"
+                    ]
+                },
+                "position": {
+                    "description": "Contact location (typically the mate-point), in the part coordinate system.",
+                    "$ref": "#/$defs/vector3"
+                },
+                "currentRating": {
+                    "description": "Per-contact current rating, in A (overrides the shared electrical rating when contacts differ, e.g. power vs signal pins).",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "contactResistance": {
+                    "description": "Mated contact resistance for this contact, in Ohm.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "normalForce": {
+                    "description": "Contact normal force for this contact, in N.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "baseMaterialRef": {
+                    "description": "coas-materials id of this contact's base metal (overrides material.contactBaseMaterialRef when mixed).",
+                    "type": "string"
+                },
+                "platingMaterialRef": {
+                    "description": "coas-materials id of this contact's mating-area finish.",
+                    "type": "string"
+                },
+                "crossSection": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "shape": {
+                            "type": "string",
+                            "enum": [
+                                "round",
+                                "square",
+                                "rectangle",
+                                "stamped",
+                                "tube"
+                            ]
+                        },
+                        "area": {
+                            "description": "Conductive cross-sectional area, in m^2.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    }
+                },
+                "pathLength": {
+                    "description": "Conductive path length from termination to mate point, in m. Sets the contact's series resistance with the base material.",
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "id"
+            ]
+        }
+    }
+}

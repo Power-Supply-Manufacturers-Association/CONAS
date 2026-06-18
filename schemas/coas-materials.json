@@ -1,0 +1,246 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/coas/coas-materials.json",
+    "title": "coasMaterial",
+    "description": "One general-purpose material record in the shared COAS material registry. It is NOT simulation-specific: the same record serves datasheet documentation, part selection/filtering, cost/compliance, SPICE / signal-integrity extraction, and electromagnetic/thermal/structural simulation. Stored one-per-line as NDJSON (like MAS core_materials.ndjson) and referenced from connector documents by 'id' string. The 'category' field discriminates which property set is REQUIRED; all other properties are optional so a material catalogued for one purpose (e.g. electrical only) still validates. All properties are declared at the top level so additionalProperties:false can close the object; the oneOf only enforces the per-category required set. SI units throughout.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "description": "Stable registry key referenced by connector material/plating/contact/shield *Ref fields.",
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "category": {
+            "description": "Material role. Drives the required property set.",
+            "type": "string",
+            "enum": [
+                "conductor",
+                "plating",
+                "dielectric",
+                "elastomer"
+            ]
+        },
+        "standardRef": {
+            "description": "External classification id (eCl@ss / IEC 61360 CDD IRDI / UNS / manufacturer grade).",
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "electrical": {
+            "description": "Electrical/electromagnetic properties.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "electricalConductivity": {
+                    "description": "Electrical conductivity at 20 C, in S/m (conductors/plating).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "temperatureCoefficientOfResistance": {
+                    "description": "Linear TCR, in 1/K. sigma(T) = sigma_20 / (1 + alpha*(T-20)).",
+                    "type": "number"
+                },
+                "relativePermittivity": {
+                    "description": "Relative permittivity (Dk) (dielectrics).",
+                    "type": "number",
+                    "minimum": 1
+                },
+                "lossTangent": {
+                    "description": "Dielectric loss tangent (Df) at the characterization frequency.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "characterizationFrequency": {
+                    "description": "Frequency at which permittivity/lossTangent are specified, in Hz.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "dielectricStrength": {
+                    "description": "Dielectric breakdown strength, in V/m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "volumeResistivity": {
+                    "description": "Volume resistivity of an insulator, in Ohm*m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            }
+        },
+        "thermal": {
+            "description": "Thermal properties.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "thermalConductivity": {
+                    "description": "Thermal conductivity, in W/(m*K).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "specificHeat": {
+                    "description": "Specific heat capacity, in J/(kg*K).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "coefficientOfThermalExpansion": {
+                    "description": "Linear CTE, in 1/K.",
+                    "type": "number"
+                },
+                "emissivity": {
+                    "description": "Total hemispherical emissivity (0..1) of exposed surfaces.",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "meltingTemperature": {
+                    "description": "Melting point, in Celsius (solder-process relevance for conductors/plating).",
+                    "type": "number"
+                },
+                "glassTransitionTemperature": {
+                    "description": "Glass-transition temperature Tg, in Celsius (polymers).",
+                    "type": "number"
+                },
+                "maxOperatingTemperature": {
+                    "description": "Maximum continuous service temperature, in Celsius.",
+                    "type": "number"
+                }
+            }
+        },
+        "mechanical": {
+            "description": "Mechanical / structural properties.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "density": {
+                    "description": "Mass density, in kg/m^3.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "youngsModulus": {
+                    "description": "Young's modulus, in Pa.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "tensileStrength": {
+                    "description": "Ultimate tensile strength, in Pa.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "yieldStrength": {
+                    "description": "Yield strength, in Pa (contact-spring stress relevance).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "elongationAtBreak": {
+                    "description": "Elongation at break, as a fraction.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "hardnessVickers": {
+                    "description": "Vickers hardness (HV) — metals/plating wear.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "hardnessShoreA": {
+                    "description": "Shore A hardness — elastomers/seals.",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                }
+            }
+        },
+        "environmental": {
+            "description": "Environmental / compliance / appearance.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ul94Rating": {
+                    "type": "string",
+                    "enum": [
+                        "HB",
+                        "V-2",
+                        "V-1",
+                        "V-0",
+                        "5VB",
+                        "5VA"
+                    ]
+                },
+                "comparativeTrackingIndex": {
+                    "description": "CTI per IEC 60112, in V.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "waterAbsorption": {
+                    "description": "Water absorption, as a fraction of mass.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "rohsCompliant": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                }
+            }
+        },
+        "cost": {
+            "description": "Indicative material cost.",
+            "$ref": "https://psma.com/peas/utils.json#/$defs/currencyAmount"
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "category"
+    ],
+    "oneOf": [
+        {
+            "$comment": "Conductor / plating: electrical conductivity is the defining property.",
+            "properties": {
+                "category": {
+                    "enum": [
+                        "conductor",
+                        "plating"
+                    ]
+                },
+                "electrical": {
+                    "required": [
+                        "electricalConductivity"
+                    ]
+                }
+            },
+            "required": [
+                "electrical"
+            ]
+        },
+        {
+            "$comment": "Dielectric: permittivity + breakdown are the defining properties.",
+            "properties": {
+                "category": {
+                    "const": "dielectric"
+                },
+                "electrical": {
+                    "required": [
+                        "relativePermittivity",
+                        "dielectricStrength"
+                    ]
+                }
+            },
+            "required": [
+                "electrical"
+            ]
+        },
+        {
+            "$comment": "Elastomer / seal: defined mechanically (no required electrical set).",
+            "properties": {
+                "category": {
+                    "const": "elastomer"
+                }
+            }
+        }
+    ]
+}
