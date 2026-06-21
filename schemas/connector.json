@@ -56,9 +56,7 @@
             "$ref": "./utils.json#/$defs/contactSystem"
         }
     },
-    "required": [
-        "manufacturerInfo"
-    ],
+    "required": [],
     "$defs": {
         "datasheetInfo": {
             "description": "All parametric information extracted from the connector datasheet. familyDetails carries the per-family discriminated union; everything else is shared across all connector families.",

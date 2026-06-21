@@ -166,6 +166,9 @@
                 },
                 {
                     "$ref": "#/$defs/familyPower"
+                },
+                {
+                    "$ref": "#/$defs/familySolderPad"
                 }
             ]
         },
@@ -488,7 +491,8 @@
                         "powerModule",
                         "barrelJack",
                         "busbar",
-                        "quickConnect"
+                        "quickConnect",
+                        "bananaJack"
                     ]
                 },
                 "termination": {
@@ -514,6 +518,29 @@
                 },
                 "wireGaugeRange": {
                     "$ref": "#/$defs/wireGaugeRange"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familySolderPad": {
+            "description": "Bare PCB copper pad — a designated area where a wire, component pin, or probe tip makes direct soldered or spring-probe contact. No housing, no mating connector. One position = one pad. Used as the abstract board-boundary sentinel when no real connector body is present (e.g. design seeds, test points, bare-wire solder points).",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "solderPad"
+                },
+                "padType": {
+                    "type": "string",
+                    "enum": [
+                        "throughHole",
+                        "surfaceMount",
+                        "castellated",
+                        "exposed"
+                    ],
+                    "description": "PCB pad style. 'exposed' covers bare copper pours and thermal pads."
                 }
             },
             "required": [

@@ -24,7 +24,8 @@
                         "circular",
                         "rf",
                         "dataInterface",
-                        "power"
+                        "power",
+                        "solderPad"
                     ]
                 },
                 "minimumPositions": {
