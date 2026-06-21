@@ -43,6 +43,11 @@
                     "type": "number",
                     "minimum": 0
                 },
+                "maximumContactResistance": {
+                    "description": "Maximum acceptable per-contact (mated pair) resistance, in Ohm. Drives the conduction-loss budget and contact temperature rise; the librarian rejects parts whose electrical.contactResistance exceeds this. Migrated from the former PEAS terminal.designRequirements.contactResistanceMax.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
                 "minimumMatingCycles": {
                     "description": "Required durability, in mate/unmate cycles.",
                     "type": "integer",
