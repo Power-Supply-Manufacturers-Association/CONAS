@@ -119,9 +119,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "required": [
-                        "matingPolarity"
-                    ]
+                    "required": []
                 }
             ]
         },
@@ -170,8 +168,7 @@
                 }
             },
             "required": [
-                "ratedCurrentPerContact",
-                "ratedVoltage"
+                "ratedCurrentPerContact"
             ]
         },
         "material": {
