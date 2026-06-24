@@ -114,3 +114,20 @@ python3 scripts/validate.py     # schemas meta-validate, refs resolve, examples 
 - Field inventory cross-referenced to **eCl@ss / IEC 61360 CDD** connector classes (the only ISO 13584/IEC 61360-conformant vendor-neutral data dictionary).
 - Family taxonomy and test-defined fields (mating cycles, dielectric withstanding voltage, derating) follow **IEC 61076** / **IEC 60603**.
 - IP codes per **IEC 60529**, flammability per **UL 94**, CTI per **IEC 60112**, MSL per **JEDEC J-STD-020**.
+## Provenance (data-source trail)
+
+Every `datasheetInfo` carries an optional `provenance` array recording where its data
+came from. Optional and closed, so records without it remain valid. Each entry:
+
+| field | meaning |
+|---|---|
+| `source` | `manufacturerDatasheet` · `manufacturerParametric` · `manufacturerDatabase` · `distributor` · `librarianEnrichment` · `scrape` · `manual` |
+| `sourceName` | human-readable source, e.g. `"TI parametric API"`, `"WE - Passive Components.mdb"`, `"DigiKey"` |
+| `sourceUrl` | URL the value came from (optional) |
+| `retrievedDate` | `YYYY-MM-DD` (optional) |
+| `fields` | which `datasheetInfo` fields this source supplied — for mixed-source records (optional) |
+
+It is a **list**: a record may combine sources (e.g. specs from the datasheet, a rated
+voltage from a distributor, a missing field back-filled by librarian enrichment). The
+canonical definition lives in `PEAS/schemas/utils.json#/$defs/provenance` (mirrored in
+`MAS/schemas/utils.json`, which is self-contained).
