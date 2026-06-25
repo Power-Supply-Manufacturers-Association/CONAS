@@ -93,7 +93,35 @@
                 "electrical",
                 "mechanical",
                 "familyDetails"
-            ]
+            ],
+            "$comment": "ratedCurrentPerContact is required for every connector family EXCEPT rf: RF/coaxial connectors are characterised by characteristicImpedance (required on familyRf), frequency and VSWR, not a published per-contact DC current.",
+            "if": {
+                "required": [
+                    "familyDetails"
+                ],
+                "properties": {
+                    "familyDetails": {
+                        "required": [
+                            "family"
+                        ],
+                        "properties": {
+                            "family": {
+                                "const": "rf"
+                            }
+                        }
+                    }
+                }
+            },
+            "then": true,
+            "else": {
+                "properties": {
+                    "electrical": {
+                        "required": [
+                            "ratedCurrentPerContact"
+                        ]
+                    }
+                }
+            }
         },
         "part": {
             "description": "Basic connector part identification. The connector family is NOT here — it is the discriminator on familyDetails (single source of truth).",
@@ -171,9 +199,7 @@
                     "minimum": 0
                 }
             },
-            "required": [
-                "ratedCurrentPerContact"
-            ]
+            "required": []
         },
         "material": {
             "description": "Bill of materials by reference. Every *Ref is a string id into conas-materials.json (the shared general-purpose material registry); plating carries the local thickness because it varies per part even for the same alloy.",
