@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/conas/inputs/designRequirements.json",
-    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "$comment": "SPDX-License-Identifier: MIT",
     "title": "designRequirements",
     "description": "Requirements a CONAS connector must comply with. Built on the PEAS designRequirementsBase mixin. The connectorFamily field aligns with connector.datasheetInfo.familyDetails.family and may constrain candidate selection.",
     "allOf": [

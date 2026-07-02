@@ -548,7 +548,7 @@
             ]
         },
         "wireGaugeRange": {
-            "description": "Accepted conductor cross-section range. Provide AWG and/or mm^2; both are common across regions.",
+            "description": "Accepted conductor cross-section range. Provide AWG and/or SI area (m^2); both are common across regions.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -558,13 +558,15 @@
                 "maximumAwg": {
                     "type": "number"
                 },
-                "minimumAreaMm2": {
+                "minimumArea": {
                     "type": "number",
-                    "exclusiveMinimum": 0
+                    "exclusiveMinimum": 0,
+                    "description": "Minimum conductor cross-section, in m^2."
                 },
-                "maximumAreaMm2": {
+                "maximumArea": {
                     "type": "number",
-                    "exclusiveMinimum": 0
+                    "exclusiveMinimum": 0,
+                    "description": "Maximum conductor cross-section, in m^2."
                 }
             }
         },
@@ -598,15 +600,6 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
-                        "units": {
-                            "description": "Length unit of all geometry fields. SI (m) is canonical; declare it explicitly because CAD exports vary.",
-                            "type": "string",
-                            "enum": [
-                                "m",
-                                "mm",
-                                "inch"
-                            ]
-                        },
                         "originDatum": {
                             "description": "What the origin (0,0,0) is anchored to.",
                             "type": "string",
@@ -632,9 +625,9 @@
                         }
                     },
                     "required": [
-                        "units",
                         "originDatum"
-                    ]
+                    ],
+                    "$comment": "All geometry fields are in SI metres (canonical, no per-document unit switch). External CAD files declare their own native unit in cadModels[].units."
                 },
                 "boundingEnvelope": {
                     "description": "Overall body extents (unmated), in m.",

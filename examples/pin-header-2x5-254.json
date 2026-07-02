@@ -86,11 +86,11 @@
                     "contactBaseMaterialRef": "cuznSn-brass",
                     "contactPlating": {
                         "matingAreaMaterialRef": "au-gold",
-                        "matingAreaThickness": 7.62e-8,
+                        "matingAreaThickness": 7.62e-08,
                         "underplatingMaterialRef": "ni-nickel",
-                        "underplatingThickness": 1.27e-6,
+                        "underplatingThickness": 1.27e-06,
                         "terminationMaterialRef": "sn-tin",
-                        "terminationThickness": 2.54e-6
+                        "terminationThickness": 2.54e-06
                     },
                     "housingMaterialRef": "pa66-gf30"
                 },
@@ -131,7 +131,6 @@
         "distributorsInfo": [],
         "geometry": {
             "coordinateSystem": {
-                "units": "m",
                 "originDatum": "pin1",
                 "mateAxis": "+z"
             },
@@ -198,7 +197,7 @@
                     "normalForce": 0.8,
                     "crossSection": {
                         "shape": "square",
-                        "area": 4.1e-7
+                        "area": 4.1e-07
                     },
                     "pathLength": 0.011
                 }

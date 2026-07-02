@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/conas/outputs.json",
-    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "$comment": "SPDX-License-Identifier: MIT",
     "title": "outputs",
     "description": "Outputs computed for one operating point of a connector. Each named block is independently optional and carries the PEAS outputBase {origin, methodUsed} provenance shell. outputs[i] aligns positionally with inputs.operatingPoints[i]. The thermal/derating blocks are what an FEA run (fed by contactSystem + conas-materials) produces and what the datasheet derating curve validates.",
     "type": "object",
@@ -82,7 +82,8 @@
                         "totalDissipation"
                     ]
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         },
         "thermalOutput": {
             "title": "thermalOutput",
@@ -112,7 +113,8 @@
                         "hotSpotTemperature"
                     ]
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         },
         "currentDeratingOutput": {
             "title": "currentDeratingOutput",
@@ -144,7 +146,8 @@
                         "passes"
                     ]
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         },
         "insulationStressOutput": {
             "title": "insulationStressOutput",
@@ -180,7 +183,8 @@
                         "passes"
                     ]
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         },
         "signalIntegrityOutput": {
             "title": "signalIntegrityOutput",
@@ -211,7 +215,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         },
         "mechanicalLifeOutput": {
             "title": "mechanicalLifeOutput",
@@ -236,7 +241,8 @@
                         "remainingCycles"
                     ]
                 }
-            ]
+            ],
+            "unevaluatedProperties": false
         }
     },
     "additionalProperties": false

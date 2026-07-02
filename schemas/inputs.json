@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/conas/inputs.json",
-    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "$comment": "SPDX-License-Identifier: MIT",
     "title": "inputs",
     "description": "The inputs used to design or evaluate a Connector. Mirrors the MAS / CAS / RAS inputs structure (operatingPoints[] + designRequirements). Connectors are multi-port, so operating points use the PEAS multiPortOperatingPoint template (per-net current/voltage) rather than the two-terminal template.",
     "type": "object",
