@@ -1,0 +1,90 @@
+{
+    "inputs": {
+        "operatingPoints": [
+            {
+                "name": "230 VAC mains, full load",
+                "conditions": {
+                    "ambientTemperature": 40
+                },
+                "excitationsPerPort": [
+                    {
+                        "port": "MAINS_L",
+                        "excitation": {
+                            "frequency": 50,
+                            "current": {
+                                "processed": {
+                                    "label": "sinusoidal",
+                                    "peak": 14.14,
+                                    "offset": 0.0,
+                                    "rms": 10.0
+                                }
+                            },
+                            "voltage": {
+                                "processed": {
+                                    "label": "sinusoidal",
+                                    "peak": 325.27,
+                                    "offset": 0.0,
+                                    "rms": 230.0
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "designRequirements": {
+            "name": "equipment mains power entry",
+            "connectorFamily": "acInlet",
+            "requiredCurrentPerContact": 10.0,
+            "requiredVoltageRating": 250
+        }
+    },
+    "connector": {
+        "manufacturerInfo": {
+            "name": "SCHURTER",
+            "orderCode": "6100.4115",
+            "family": "6100-3",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "6100.4115",
+                    "series": "6100-3",
+                    "description": "IEC 60320 C14 appliance inlet, panel mount snap-in (27.5 x 20 mm cutout, 1.5 mm panel), solder terminals, unfiltered",
+                    "matingPolarity": "male"
+                },
+                "electrical": {
+                    "ratedCurrentPerContact": 10.0,
+                    "ratedVoltage": 250
+                },
+                "mechanical": {
+                    "positions": 3,
+                    "mountingStyle": "panel"
+                },
+                "environmental": {
+                    "ipRating": "IP30",
+                    "sealed": false
+                },
+                "familyDetails": {
+                    "family": "acInlet",
+                    "standardSheet": "C14",
+                    "mounting": "snapIn",
+                    "terminalStyle": "solder",
+                    "integratedFuseHolder": false,
+                    "integratedSwitch": false,
+                    "integratedFilter": false
+                },
+                "provenance": [
+                    {
+                        "source": "distributor",
+                        "sourceName": "DigiKey",
+                        "sourceUrl": "https://www.digikey.com/en/products/detail/schurter-inc/6100-4115/569904",
+                        "retrievedDate": "2026-07-02"
+                    }
+                ]
+            }
+        },
+        "distributorsInfo": []
+    },
+    "outputs": [
+        {}
+    ]
+}

@@ -1,6 +1,8 @@
 # CONAS-RFC 0001 — Missing power-connector families (wireToWire, busbar, acInlet, lugs)
 
-- **Status:** Draft (stub — from the 2026-07 workspace review)
+- **Status:** Partially implemented 2026-07-02 — `wireToWire`, `busbar`, `acInlet` branches added to
+  `familyDetails` (+ `designRequirements.connectorFamily`, docs, examples). `lugs` still pending design;
+  the TAS/data migration pass for the misfiled parts is a separate follow-up.
 - **Created:** 2026-07-02
 
 ## Problem

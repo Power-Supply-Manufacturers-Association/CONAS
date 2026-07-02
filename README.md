@@ -2,7 +2,7 @@
 
 Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic **connectors**, part of the OpenConverters / PEAS family. A CONAS document is `{ inputs, connector, outputs }` and is also a valid PEAS document.
 
-- **Tier 1 (catalog):** `connector.datasheetInfo` — parametric data with a family-discriminated union (`familyDetails`) covering pin headers, board-to-board, wire-to-board, terminal blocks, FFC/FPC, card edge, circular, RF, standardized data interfaces, and power connectors.
+- **Tier 1 (catalog):** `connector.datasheetInfo` — parametric data with a family-discriminated union (`familyDetails`) covering pin headers, board-to-board, wire-to-board, wire-to-wire, terminal blocks, FFC/FPC, card edge, circular, RF, standardized data interfaces, power connectors, busbars, IEC 60320 AC inlets, and bare solder pads.
 - **Tier 2 (simulation):** optional `geometry` (parametric body + external CAD refs + PCB footprint) and `contactSystem` (per-contact geometry, net map, mating interface) for 3D / FEA / thermal.
 - **`conas-materials`** — shared general-purpose material registry (NDJSON), referenced by id, so electrical/thermal/mechanical/environmental/cost properties live once and are reused across datasheet, selection, SPICE and simulation.
 
@@ -23,7 +23,10 @@ schemas/
 data/
   conas-materials.ndjson   material registry, one JSON record per line, referenced by id
 examples/
-  pin-header-2x5-254.json worked WR-PHD doc exercising both tiers
+  pin-header-2x5-254.json          worked WR-PHD doc exercising both tiers
+  wire-to-wire-minifit-jr-6.json   Molex Mini-Fit Jr. 5557 receptacle (wireToWire)
+  busbar-littelfuse-880118.json    Littelfuse 250 A stud busbar (busbar)
+  ac-inlet-schurter-6100-4115.json SCHURTER IEC C14 snap-in inlet (acInlet)
 docs/
   schema.md               structure diagram + field reference
 scripts/

@@ -1,0 +1,99 @@
+{
+    "inputs": {
+        "operatingPoints": [
+            {
+                "name": "48 V distribution, full load",
+                "conditions": {
+                    "ambientTemperature": 40
+                },
+                "excitationsPerPort": [
+                    {
+                        "port": "48V_DIST",
+                        "excitation": {
+                            "frequency": 0,
+                            "current": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 200.0,
+                                    "offset": 200.0,
+                                    "rms": 200.0
+                                }
+                            },
+                            "voltage": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 48.0,
+                                    "offset": 48.0,
+                                    "rms": 48.0
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "designRequirements": {
+            "name": "48 V common distribution point",
+            "connectorFamily": "busbar",
+            "requiredCurrentPerContact": 200.0,
+            "requiredVoltageRating": 48
+        }
+    },
+    "connector": {
+        "manufacturerInfo": {
+            "name": "Littelfuse",
+            "orderCode": "880118",
+            "family": "Common BusBar",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "880118",
+                    "series": "880",
+                    "description": "Heavy-duty common bus bar, 4 x 5/16\"-18 insert-molded stainless studs with serrated flange nuts, 250 A"
+                },
+                "electrical": {
+                    "ratedCurrentPerContact": 250.0,
+                    "ratedVoltage": 300
+                },
+                "mechanical": {
+                    "positions": 4,
+                    "mountingStyle": "panel"
+                },
+                "familyDetails": {
+                    "family": "busbar",
+                    "construction": "solid",
+                    "barMaterialRef": "cu-etp-copper",
+                    "platingMaterialRef": "sn-tin",
+                    "holeCount": 4,
+                    "studThread": "5/16-18"
+                },
+                "provenance": [
+                    {
+                        "source": "distributor",
+                        "sourceName": "DigiKey",
+                        "sourceUrl": "https://www.digikey.com/en/products/detail/littelfuse-commercial-vehicle-products/880118/6347653",
+                        "retrievedDate": "2026-07-02",
+                        "fields": [
+                            "electrical.ratedCurrentPerContact",
+                            "familyDetails.holeCount",
+                            "familyDetails.studThread"
+                        ]
+                    },
+                    {
+                        "source": "manufacturerDatasheet",
+                        "sourceName": "Littelfuse Common BusBar Screw Terminals series datasheet",
+                        "retrievedDate": "2026-07-02",
+                        "fields": [
+                            "electrical.ratedVoltage",
+                            "familyDetails.barMaterialRef",
+                            "familyDetails.platingMaterialRef"
+                        ]
+                    }
+                ]
+            }
+        },
+        "distributorsInfo": []
+    },
+    "outputs": [
+        {}
+    ]
+}

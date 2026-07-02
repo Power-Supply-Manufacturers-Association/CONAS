@@ -30,11 +30,13 @@ CONAS  (https://psma.com/conas/CONAS.json)   { inputs, connector, outputs }
 │   │       ├─ environmental   { operatingTemperature, ipRating, sealed, solderProcess,
 │   │       │                    pollutionDegree, overvoltageCategory, MSL, RoHS/REACH }
 │   │       ├─ derating        { currentVsAmbient, currentVsEnergizedContacts, maxTempRise }
-│   │       └─ familyDetails   ◄── oneOf, discriminated by `family` const  (10 variants)
-│   │             pinHeaderSocket │ boardToBoard │ wireToBoard │ terminalBlock │ fpcFfc │
-│   │             cardEdge │ circular │ rf │ dataInterface │ power
+│   │       └─ familyDetails   ◄── oneOf, discriminated by `family` const  (14 variants)
+│   │             pinHeaderSocket │ boardToBoard │ wireToBoard │ wireToWire │ terminalBlock │
+│   │             fpcFfc │ cardEdge │ circular │ rf │ dataInterface │ power │ busbar │
+│   │             acInlet │ solderPad
 │   │             (each adds only its unique fields, e.g. rf → characteristicImpedance,
-│   │              frequencyRange, maxVswr; terminalBlock → clampType, wireGaugeRange)
+│   │              frequencyRange, maxVswr; terminalBlock → clampType, wireGaugeRange;
+│   │              acInlet → standardSheet C1..C24, fuse/switch/filter flags)
 │   │
 │   ├─ distributorsInfo[]
 │   ├─ geometry                ◄── TIER 2: 3D (optional)
@@ -78,7 +80,13 @@ Mirrors the RAS/CAS datasheet pattern. Blocks:
 Three orthogonal attachment axes are kept separate (no overlapping enums): **mountingStyle** (how the board side attaches: tht/smt/pressFit/skedd/panel/cable), **solderProcess** (reflow/wave/selective/handSolder/throughHoleReflow — only when soldered), and **family-specific wire-side termination** (crimp/idc/screw/busbar… in `familyDetails`). Derived/extracted lumped model values (per-contact L/C, extracted impedance) are **not** stored in the datasheet layer — they are simulation outputs (`outputs.signalIntegrity`); only genuinely datasheet-published impedance lives on the relevant family (`familyRf`, `familyDataInterface`).
 
 **`familyDetails`** is a `oneOf` over closed variants, each tagged by a `family` const:
-`pinHeaderSocket`, `boardToBoard`, `wireToBoard`, `terminalBlock`, `fpcFfc`, `cardEdge`, `circular`, `rf`, `dataInterface`, `power`. Each variant carries only what is unique (e.g. `rf` adds characteristicImpedance + frequencyRange + maxVswr; `terminalBlock` adds clampType + wireGaugeRange; `circular` adds shellSize + coding + couplingType; `power` covers WR-MPC/NPC high-current and WR-DC barrel jacks, adding powerStyle + barrel dimensions). The enum is reconciled against the Würth Connectivity catalog (WR-* series). SKEDD press-in is a *termination*, not a family — it appears in the termination/mountingStyle enums.
+`pinHeaderSocket`, `boardToBoard`, `wireToBoard`, `wireToWire`, `terminalBlock`, `fpcFfc`, `cardEdge`, `circular`, `rf`, `dataInterface`, `power`, `busbar`, `acInlet`, `solderPad`. Each variant carries only what is unique (e.g. `rf` adds characteristicImpedance + frequencyRange + maxVswr; `terminalBlock` adds clampType + wireGaugeRange; `circular` adds shellSize + coding + couplingType; `power` covers WR-MPC/NPC high-current and WR-DC barrel jacks, adding powerStyle + barrel dimensions; `solderPad` is the bare-PCB-pad boundary sentinel). The enum is reconciled against the Würth Connectivity catalog (WR-* series). SKEDD press-in is a *termination*, not a family — it appears in the termination/mountingStyle enums.
+
+Notes on the three families added 2026-07 (field surface chosen from live distributor/vendor parametric filters — DigiKey "Rectangular Connectors — Free Hanging, Panel Mount", "Power Entry Connectors — Inlets, Outlets, Modules"; Molex Mini-Fit Jr., Littelfuse Common BusBar, SCHURTER 6100 datasheets):
+
+- **`wireToWire`** — in-line plug/receptacle pairs joining two cable harnesses with no board side (Molex Mini-Fit Jr., JST SM, TE AMP Superseal). Adds only `housingStyle` (plug/receptacle — a *housing* role, independent of `part.matingPolarity`: a plug housing commonly carries female terminals), `termination` (crimp/idc/poke-in/solderCup, same axis as `wireToBoard`), `wireGaugeRange`, `secondaryLock` (TPA). Free-hanging vs panel-mount is `mechanical.mountingStyle` (`cable` vs `panel`); sealing (Superseal-style IP67) is `environmental.ipRating`/`sealed`.
+- **`busbar`** — solid/laminated/flexible bare distribution conductors with bolted hole/stud connection points. Adds `construction`, `barMaterialRef` + `platingMaterialRef` (conas-materials ids — busbars have **no housing**, so the shared `material` block, whose `housingMaterialRef` is required, does not apply), `crossSection` {width, thickness, area}, and the connection pattern `holeCount`/`holeDiameter`/`holeSpacing`/`studThread`. The bar's rated current is `electrical.ratedCurrentPerContact`; overall length is `mechanical.length`. **No `pitch`** — a busbar is not a pitched contact array (that miscategorization is what this family fixes).
+- **`acInlet`** — IEC 60320 appliance couplers for power entry. `standardSheet` (required) is a closed enum of the 60320 sheets C1–C24 (even = appliance inlets C2/C6/C8/C14/C16/C16A/C18/C20/C22/C24; odd = connectors/outlets — equipment-mounted C13/C15/C19 bodies are the IEC 60320-2-2 appliance outlets universally named by their sheet). Adds `mounting` (screwFlange/snapIn/pcb — refines `mechanical.mountingStyle`), `terminalStyle` (quickConnect/solder/pcb), and the power-entry-module flags `integratedFuseHolder`/`integratedSwitch`/`integratedFilter`. Rated current/voltage stay in the shared `electrical` block (fixed per sheet, restated by vendors — e.g. C14 = 10 A / 250 VAC IEC).
 
 ### Tier 2 — 3D + simulation (`connector.geometry`, `connector.contactSystem`)
 Optional, closed blocks populated only for parts you model in 3D, render, or simulate. They never dilute the Tier-1 catalog.

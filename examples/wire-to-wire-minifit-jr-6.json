@@ -1,0 +1,114 @@
+{
+    "inputs": {
+        "operatingPoints": [
+            {
+                "name": "24 V harness bus, full load",
+                "conditions": {
+                    "ambientTemperature": 60
+                },
+                "excitationsPerPort": [
+                    {
+                        "port": "24V_BUS",
+                        "excitation": {
+                            "frequency": 0,
+                            "current": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 5.0,
+                                    "offset": 5.0,
+                                    "rms": 5.0
+                                }
+                            },
+                            "voltage": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 24.0,
+                                    "offset": 24.0,
+                                    "rms": 24.0
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "designRequirements": {
+            "name": "harness-to-harness power join",
+            "connectorFamily": "wireToWire",
+            "minimumPositions": 6,
+            "requiredCurrentPerContact": 5.0,
+            "requiredVoltageRating": 250,
+            "minimumMatingCycles": 30
+        }
+    },
+    "connector": {
+        "manufacturerInfo": {
+            "name": "Molex",
+            "orderCode": "0039012060",
+            "datasheetUrl": "https://www.molex.com/en-us/products/part-detail/0039012060",
+            "family": "Mini-Fit Jr.",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "39-01-2060",
+                    "series": "5557",
+                    "description": "Mini-Fit Jr. receptacle housing, dual row, 6 circuits, 4.2 mm pitch, free-hanging wire-to-wire (mates 5559/5566 with 5556 female crimp terminals)",
+                    "matingPolarity": "female"
+                },
+                "electrical": {
+                    "ratedCurrentPerContact": 9.0,
+                    "ratedVoltage": 600,
+                    "contactResistance": {
+                        "maximum": 0.01
+                    },
+                    "insulationResistance": 1000000000.0
+                },
+                "mechanical": {
+                    "positions": 6,
+                    "rows": 2,
+                    "pitch": 0.0042,
+                    "rowPitch": 0.0055,
+                    "mountingStyle": "cable",
+                    "matingCycles": 30,
+                    "locking": "latch"
+                },
+                "material": {
+                    "contactBaseMaterialRef": "cuznSn-brass",
+                    "contactPlating": {
+                        "matingAreaMaterialRef": "sn-tin"
+                    },
+                    "housingMaterialRef": "pa66-nylon"
+                },
+                "environmental": {
+                    "operatingTemperature": {
+                        "minimum": -40,
+                        "maximum": 105
+                    },
+                    "sealed": false,
+                    "rohsCompliant": true
+                },
+                "familyDetails": {
+                    "family": "wireToWire",
+                    "housingStyle": "receptacle",
+                    "termination": "crimp",
+                    "wireGaugeRange": {
+                        "minimumAwg": 16,
+                        "maximumAwg": 24
+                    },
+                    "secondaryLock": false
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerDatasheet",
+                        "sourceName": "Molex Mini-Fit Jr. 5557 drawing + product spec PS-5556-001",
+                        "sourceUrl": "https://www.molex.com/en-us/products/part-detail/0039012060",
+                        "retrievedDate": "2026-07-02"
+                    }
+                ]
+            }
+        },
+        "distributorsInfo": []
+    },
+    "outputs": [
+        {}
+    ]
+}

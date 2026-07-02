@@ -147,6 +147,9 @@
                     "$ref": "#/$defs/familyWireToBoard"
                 },
                 {
+                    "$ref": "#/$defs/familyWireToWire"
+                },
+                {
                     "$ref": "#/$defs/familyTerminalBlock"
                 },
                 {
@@ -166,6 +169,12 @@
                 },
                 {
                     "$ref": "#/$defs/familyPower"
+                },
+                {
+                    "$ref": "#/$defs/familyBusbar"
+                },
+                {
+                    "$ref": "#/$defs/familyAcInlet"
                 },
                 {
                     "$ref": "#/$defs/familySolderPad"
@@ -247,6 +256,44 @@
                     "$ref": "#/$defs/wireGaugeRange"
                 },
                 "secondaryLock": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyWireToWire": {
+            "description": "In-line wire-to-wire connector half: a plug/receptacle pair joining two cable harnesses with no board side (e.g. Molex Mini-Fit Jr., JST SM, TE AMP Superseal). Free-hanging vs panel-mount is mechanical.mountingStyle ('cable' vs 'panel'); sealing/IP is environmental.ipRating/sealed; pitch, positions and ratings are the shared blocks.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "wireToWire"
+                },
+                "housingStyle": {
+                    "description": "Which mating half this housing is. Independent of contact gender: a plug housing commonly carries female terminals (part.matingPolarity is the physical polarity).",
+                    "type": "string",
+                    "enum": [
+                        "plug",
+                        "receptacle"
+                    ]
+                },
+                "termination": {
+                    "description": "Wire-side termination method (same axis as familyWireToBoard.termination; there is no board side).",
+                    "type": "string",
+                    "enum": [
+                        "crimp",
+                        "idc",
+                        "poke-in",
+                        "solderCup"
+                    ]
+                },
+                "wireGaugeRange": {
+                    "$ref": "#/$defs/wireGaugeRange"
+                },
+                "secondaryLock": {
+                    "description": "Whether a secondary terminal-retention feature (TPA / lock plate) is present.",
                     "type": "boolean"
                 }
             },
@@ -522,6 +569,146 @@
             },
             "required": [
                 "family"
+            ]
+        },
+        "familyBusbar": {
+            "description": "Solid, laminated or flexible busbar: a bare distribution conductor with bolted hole/stud connection points, not a mating contact system. There is NO pitch (connection geometry is the hole/stud pattern here) and no housing, so the shared material block does not apply — the conductor is barMaterialRef. The bar's rated current is electrical.ratedCurrentPerContact (one conductor = one 'contact'); overall length is mechanical.length.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "busbar"
+                },
+                "construction": {
+                    "type": "string",
+                    "enum": [
+                        "solid",
+                        "laminated",
+                        "flexible"
+                    ]
+                },
+                "barMaterialRef": {
+                    "description": "conas-materials id of the bar conductor (e.g. 'cu-etp-copper').",
+                    "type": "string"
+                },
+                "platingMaterialRef": {
+                    "description": "conas-materials id of the surface plating (e.g. 'sn-tin', 'ag-silver'), when plated.",
+                    "type": "string"
+                },
+                "crossSection": {
+                    "description": "Conductor cross-section: width x thickness for solid/laminated bars, area for flexible/braided equivalents.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "width": {
+                            "description": "Bar width, in m.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "thickness": {
+                            "description": "Bar (single-conductor) thickness, in m.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "area": {
+                            "description": "Conductive cross-sectional area, in m^2.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    }
+                },
+                "holeCount": {
+                    "description": "Number of connection points (holes or studs).",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "holeDiameter": {
+                    "description": "Connection-hole diameter, in m (drilled/clearance holes).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "holeSpacing": {
+                    "description": "Centre-to-centre spacing of adjacent connection points, in m.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "studThread": {
+                    "description": "Thread specification when the connection points are studs (e.g. 'M8', '5/16-18').",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "family"
+            ]
+        },
+        "familyAcInlet": {
+            "description": "IEC 60320 appliance coupler for power entry: equipment-mounted inlets (C6, C8, C14, C16, C20, ...) and appliance outlets (C13, C15, C19, per IEC 60320-2-2). Rated current/voltage live in the shared electrical block (fixed per sheet, but vendors restate them, e.g. C14 = 10 A / 250 VAC IEC).",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "family": {
+                    "const": "acInlet"
+                },
+                "standardSheet": {
+                    "description": "IEC 60320 standard sheet. Even numbers are appliance inlets, odd numbers are connectors/outlets; equipment-mounted C13/C15/C19 bodies are the IEC 60320-2-2 appliance outlets universally named by their sheet.",
+                    "type": "string",
+                    "enum": [
+                        "C1",
+                        "C2",
+                        "C5",
+                        "C6",
+                        "C7",
+                        "C8",
+                        "C13",
+                        "C14",
+                        "C15",
+                        "C15A",
+                        "C16",
+                        "C16A",
+                        "C17",
+                        "C18",
+                        "C19",
+                        "C20",
+                        "C21",
+                        "C22",
+                        "C23",
+                        "C24"
+                    ]
+                },
+                "mounting": {
+                    "description": "Panel/board fixing method (refines mechanical.mountingStyle: screwFlange and snapIn are 'panel' bodies; 'pcb' is a board-soldered body).",
+                    "type": "string",
+                    "enum": [
+                        "screwFlange",
+                        "snapIn",
+                        "pcb"
+                    ]
+                },
+                "terminalStyle": {
+                    "description": "Supply-side termination (quick-connect tabs, solder/solder-eyelet lugs, or PCB pins).",
+                    "type": "string",
+                    "enum": [
+                        "quickConnect",
+                        "solder",
+                        "pcb"
+                    ]
+                },
+                "integratedFuseHolder": {
+                    "description": "Whether a fuse holder is integrated (power entry module).",
+                    "type": "boolean"
+                },
+                "integratedSwitch": {
+                    "description": "Whether a mains switch is integrated (power entry module).",
+                    "type": "boolean"
+                },
+                "integratedFilter": {
+                    "description": "Whether an EMI line filter is integrated (power entry module).",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "family",
+                "standardSheet"
             ]
         },
         "familySolderPad": {
