@@ -18,7 +18,7 @@ PSMA = os.path.dirname(HERE)
 
 # PEAS's oneOf reaches every family: all siblings must be in the registry or
 # gate 3 cannot run (and failing to run is a FAILURE, not a skip).
-REPOS = ("PEAS", "MAS", "CAS", "SAS", "RAS", "CTAS", "CONAS", "AAS", "TAS", "CIAS", "COAS")
+REPOS = ("PEAS", "MAS", "CAS", "SAS", "RAS", "CTAS", "CONAS", "AAS", "TBAS", "TAS", "CIAS", "COAS")
 
 
 def load_all():
