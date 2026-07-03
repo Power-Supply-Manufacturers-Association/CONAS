@@ -6,10 +6,11 @@ Three gates, all of which FAIL loudly (a gate that cannot run is an error, never
   2. every example validates against CONAS.json
   3. citizenship: every example is also a valid PEAS document (connector branch)
 """
-import json
 import glob
+import json
 import os
 import sys
+
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
