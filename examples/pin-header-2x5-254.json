@@ -1,222 +1,232 @@
 {
-    "inputs": {
-        "operatingPoints": [
-            {
-                "name": "full load, hot ambient",
-                "conditions": {
-                    "ambientTemperature": 85
-                },
-                "excitationsPerPort": [
-                    {
-                        "port": "VBUS",
-                        "excitation": {
-                            "frequency": 0,
-                            "current": {
-                                "processed": {
-                                    "label": "rectangular",
-                                    "peak": 3.0,
-                                    "offset": 3.0,
-                                    "rms": 3.0
-                                }
-                            },
-                            "voltage": {
-                                "processed": {
-                                    "label": "rectangular",
-                                    "peak": 12.0,
-                                    "offset": 12.0,
-                                    "rms": 12.0
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        ],
-        "designRequirements": {
-            "name": "board-to-cable power tap",
-            "connectorFamily": "pinHeaderSocket",
-            "minimumPositions": 10,
-            "requiredCurrentPerContact": 3.0,
-            "requiredVoltageRating": 250,
-            "minimumMatingCycles": 25
-        }
-    },
-    "connector": {
-        "manufacturerInfo": {
-            "name": "Würth Elektronik",
-            "orderCode": "61201023621",
-            "datasheetInfo": {
-                "part": {
-                    "partNumber": "61201023621",
-                    "series": "WR-PHD",
-                    "description": "2.54 mm pin header, dual row, 2x5, THT vertical",
-                    "matingPolarity": "male"
-                },
-                "electrical": {
-                    "ratedCurrentPerContact": 3.0,
-                    "ratedCurrentReferenceTemperature": 20,
-                    "ratedVoltage": 250,
-                    "contactResistance": {
-                        "nominal": 0.02
-                    },
-                    "insulationResistance": 5000000000.0,
-                    "dielectricWithstandingVoltage": 1000
-                },
-                "mechanical": {
-                    "positions": 10,
-                    "rows": 2,
-                    "pitch": 0.00254,
-                    "rowPitch": 0.00254,
-                    "orientation": "vertical",
-                    "mountingStyle": "tht",
-                    "matingCycles": 25,
-                    "insertionForce": 12.0,
-                    "withdrawalForce": 4.0,
-                    "length": {
-                        "nominal": 0.0127
-                    },
-                    "width": {
-                        "nominal": 0.00508
-                    },
-                    "height": {
-                        "nominal": 0.00254
-                    }
-                },
-                "material": {
-                    "contactBaseMaterialRef": "cuznSn-brass",
-                    "contactPlating": {
-                        "matingAreaMaterialRef": "au-gold",
-                        "matingAreaThickness": 7.62e-08,
-                        "underplatingMaterialRef": "ni-nickel",
-                        "underplatingThickness": 1.27e-06,
-                        "terminationMaterialRef": "sn-tin",
-                        "terminationThickness": 2.54e-06
-                    },
-                    "housingMaterialRef": "pa66-gf30"
-                },
-                "environmental": {
-                    "operatingTemperature": {
-                        "minimum": -40,
-                        "maximum": 125
-                    },
-                    "ipRating": "IP20",
-                    "sealed": false,
-                    "solderProcess": "wave",
-                    "rohsCompliant": true,
-                    "reachCompliant": true
-                },
-                "derating": {
-                    "currentVsAmbient": {
-                        "temperature": [
-                            20,
-                            85,
-                            125
-                        ],
-                        "amplitude": [
-                            1.0,
-                            0.7,
-                            0.0
-                        ]
-                    },
-                    "maxTemperatureRise": 30
-                },
-                "familyDetails": {
-                    "family": "pinHeaderSocket",
-                    "pinStyle": "squarePin",
-                    "tailLength": 0.003,
-                    "stackable": true
-                }
-            }
+  "inputs": {
+    "operatingPoints": [
+      {
+        "name": "full load, hot ambient",
+        "conditions": {
+          "ambientTemperature": 85
         },
-        "distributorsInfo": [],
-        "geometry": {
-            "coordinateSystem": {
-                "originDatum": "pin1",
-                "mateAxis": "+z"
-            },
-            "boundingEnvelope": {
-                "length": 0.0127,
-                "width": 0.00508,
-                "height": 0.0115
-            },
-            "matedHeight": 0.012,
-            "pcbFootprint": {
-                "pattern": "dualRow",
-                "pads": [
-                    {
-                        "id": "1",
-                        "x": 0.0,
-                        "y": 0.0,
-                        "shape": "plated-hole",
-                        "drill": 0.001
-                    },
-                    {
-                        "id": "2",
-                        "x": 0.0,
-                        "y": 0.00254,
-                        "shape": "plated-hole",
-                        "drill": 0.001
-                    }
-                ]
-            },
-            "parametric": {
-                "contactArray": {
-                    "pitchX": 0.00254,
-                    "pitchY": 0.00254,
-                    "countX": 5,
-                    "countY": 2,
-                    "origin": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 0.0
-                    }
+        "excitationsPerPort": [
+          {
+            "port": "VBUS",
+            "excitation": {
+              "frequency": 0,
+              "current": {
+                "processed": {
+                  "label": "rectangular",
+                  "peak": 3.0,
+                  "offset": 3.0,
+                  "rms": 3.0
                 }
-            },
-            "cadModels": [
-                {
-                    "format": "STEP",
-                    "uri": "https://www.we-online.com/components/products/STEP/61201023621.stp",
-                    "units": "mm",
-                    "lod": "full"
+              },
+              "voltage": {
+                "processed": {
+                  "label": "rectangular",
+                  "peak": 12.0,
+                  "offset": 12.0,
+                  "rms": 12.0
                 }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "designRequirements": {
+      "name": "board-to-cable power tap",
+      "connectorFamily": "pinHeaderSocket",
+      "minimumPositions": 10,
+      "requiredCurrentPerContact": 3.0,
+      "requiredVoltageRating": 250,
+      "minimumMatingCycles": 25
+    }
+  },
+  "connector": {
+    "manufacturerInfo": {
+      "name": "Würth Elektronik",
+      "orderCode": "61201023621",
+      "datasheetInfo": {
+        "part": {
+          "partNumber": "61201023621",
+          "series": "WR-PHD",
+          "description": "2.54 mm pin header, dual row, 2x5, THT vertical",
+          "matingPolarity": "male"
+        },
+        "electrical": {
+          "ratedCurrentPerContact": 3.0,
+          "ratedCurrentReferenceTemperature": 20,
+          "ratedVoltage": 250,
+          "contactResistance": {
+            "nominal": 0.02
+          },
+          "insulationResistance": 5000000000.0,
+          "dielectricWithstandingVoltage": 1000
+        },
+        "mechanical": {
+          "positions": 10,
+          "rows": 2,
+          "pitch": 0.00254,
+          "rowPitch": 0.00254,
+          "orientation": "vertical",
+          "mountingStyle": "tht",
+          "matingCycles": 25,
+          "insertionForce": 12.0,
+          "withdrawalForce": 4.0,
+          "length": {
+            "nominal": 0.0127
+          },
+          "width": {
+            "nominal": 0.00508
+          },
+          "height": {
+            "nominal": 0.00254
+          }
+        },
+        "material": {
+          "contactBaseMaterialRef": "cuznSn-brass",
+          "contactPlating": {
+            "matingAreaMaterialRef": "au-gold",
+            "matingAreaThickness": 7.62e-08,
+            "underplatingMaterialRef": "ni-nickel",
+            "underplatingThickness": 1.27e-06,
+            "terminationMaterialRef": "sn-tin",
+            "terminationThickness": 2.54e-06
+          },
+          "housingMaterialRef": "pa66-gf30"
+        },
+        "environmental": {
+          "operatingTemperature": {
+            "minimum": -40,
+            "maximum": 125
+          },
+          "ipRating": "IP20",
+          "sealed": false,
+          "solderProcess": "wave",
+          "rohsCompliant": true,
+          "reachCompliant": true
+        },
+        "derating": {
+          "currentVsAmbient": {
+            "temperature": [
+              20,
+              85,
+              125
+            ],
+            "amplitude": [
+              1.0,
+              0.7,
+              0.0
             ]
+          },
+          "maxTemperatureRise": 30
         },
-        "contactSystem": {
-            "contacts": [
-                {
-                    "id": "1",
-                    "pinName": "VBUS",
-                    "signalRole": "power",
-                    "position": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 0.0
-                    },
-                    "currentRating": 3.0,
-                    "contactResistance": 0.02,
-                    "normalForce": 0.8,
-                    "crossSection": {
-                        "shape": "square",
-                        "area": 4.1e-07
-                    },
-                    "pathLength": 0.011
-                }
-            ],
-            "nets": [
-                {
-                    "name": "VBUS",
-                    "contactIds": [
-                        "1"
-                    ]
-                }
-            ],
-            "matingInterface": {
-                "partnerPartNumber": "61201021621",
-                "contactType": "pinSocket"
+        "mating": {
+          "matesWith": [
+            {
+              "manufacturer": "Würth Elektronik",
+              "series": "WR-PHD socket header, 2.54 mm",
+              "relation": "mates"
             }
+          ],
+          "intermateabilityStandard": "2.54 mm (0.100 in) pitch, 0.635 mm square-post header interface"
+        },
+        "familyDetails": {
+          "family": "pinHeaderSocket",
+          "pinStyle": "squarePin",
+          "tailLength": 0.003,
+          "stackable": true
         }
+      }
     },
-    "outputs": [
-        {}
-    ]
+    "distributorsInfo": [],
+    "geometry": {
+      "coordinateSystem": {
+        "originDatum": "pin1",
+        "mateAxis": "+z"
+      },
+      "boundingEnvelope": {
+        "length": 0.0127,
+        "width": 0.00508,
+        "height": 0.0115
+      },
+      "matedHeight": 0.012,
+      "pcbFootprint": {
+        "pattern": "dualRow",
+        "pads": [
+          {
+            "id": "1",
+            "x": 0.0,
+            "y": 0.0,
+            "shape": "plated-hole",
+            "drill": 0.001
+          },
+          {
+            "id": "2",
+            "x": 0.0,
+            "y": 0.00254,
+            "shape": "plated-hole",
+            "drill": 0.001
+          }
+        ]
+      },
+      "parametric": {
+        "contactArray": {
+          "pitchX": 0.00254,
+          "pitchY": 0.00254,
+          "countX": 5,
+          "countY": 2,
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "cadModels": [
+        {
+          "format": "STEP",
+          "uri": "https://www.we-online.com/components/products/STEP/61201023621.stp",
+          "units": "mm",
+          "lod": "full"
+        }
+      ]
+    },
+    "contactSystem": {
+      "contacts": [
+        {
+          "id": "1",
+          "pinName": "VBUS",
+          "signalRole": "power",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "currentRating": 3.0,
+          "contactResistance": 0.02,
+          "normalForce": 0.8,
+          "crossSection": {
+            "shape": "square",
+            "area": 4.1e-07
+          },
+          "pathLength": 0.011
+        }
+      ],
+      "nets": [
+        {
+          "name": "VBUS",
+          "contactIds": [
+            "1"
+          ]
+        }
+      ],
+      "matingInterface": {
+        "partnerPartNumber": "61201021621",
+        "contactType": "pinSocket"
+      }
+    }
+  },
+  "outputs": [
+    {}
+  ]
 }

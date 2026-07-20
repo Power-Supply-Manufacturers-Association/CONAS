@@ -30,6 +30,8 @@ CONAS  (https://psma.com/conas/CONAS.json)   { inputs, connector, outputs }
 │   │       ├─ environmental   { operatingTemperature, ipRating, sealed, solderProcess,
 │   │       │                    pollutionDegree, overvoltageCategory, MSL, RoHS/REACH }
 │   │       ├─ derating        { currentVsAmbient, currentVsEnergizedContacts, maxTempRise }
+│   │       ├─ mating          { matesWith[]{manufacturer, series, relation, matedHeight},
+│   │       │                    intermateabilityStandard }
 │   │       └─ familyDetails   ◄── oneOf, discriminated by `family` const  (14 variants)
 │   │             pinHeaderSocket │ boardToBoard │ wireToBoard │ wireToWire │ terminalBlock │
 │   │             fpcFfc │ cardEdge │ circular │ rf │ dataInterface │ power │ busbar │
@@ -70,11 +72,12 @@ Mirrors the RAS/CAS datasheet pattern. Blocks:
 | Block | Holds |
 |---|---|
 | `part` | partNumber, series, case, description, **matingPolarity** (male/female/hermaphroditic/genderless — physical polarity only; form factor is encoded by family + mountingStyle) |
-| `electrical` | ratedCurrentPerContact (+ reference temp), ratedVoltage, contactResistance, insulationResistance, dielectricWithstandingVoltage, **clearance**, **creepage** (IEC 60664 selection ratings). `ratedCurrentPerContact` is required for every family **except `rf`** — RF/coaxial connectors are defined by `familyRf.characteristicImpedance`, frequency and VSWR, not a published per-contact DC current |
+| `electrical` | ratedCurrentPerContact (+ reference temp), ratedVoltage, contactResistance, insulationResistance, dielectricWithstandingVoltage, **clearance**, **creepage** (IEC 60664 selection ratings), **pairRatings[]** (per-counterpart current/voltage/IP rows — several connector ratings are pair properties, not part properties; the scalars stay as the standalone/worst-case figures). `ratedCurrentPerContact` is required for every family **except `rf`** — RF/coaxial connectors are defined by `familyRf.characteristicImpedance`, frequency and VSWR, not a published per-contact DC current |
 | `mechanical` | positions, rows, pitch/rowPitch, orientation, **mountingStyle** (board-attach axis only), matingCycles, insertion/withdrawal/**contactNormalForce**, locking, body dimensions |
 | `material` | `*Ref` ids into `conas-materials` for contact base / housing / shield / seal, plus the `plating` stack (mating + termination + underplating, with thicknesses). Material properties (UL-94, σ, εᵣ, …) live once on the referenced `conas-materials` record, never copied here |
 | `environmental` | operatingTemperature range, ipRating, sealed, **solderProcess** (solder axis only), **pollutionDegree** + **overvoltageCategory** (IEC 60664), MSL, RoHS/REACH |
 | `derating` | currentVsAmbient curve **and** currentVsEnergizedContacts curve, maxTemperatureRise — thermal-simulation validation target |
+| `mating` | the interchangeability surface: **matesWith[]** (series-level counterpart relations — mates / intermateableStandard / mandatoryCompanion / optionalCompanion, optional per-pair matedHeight) and **intermateabilityStandard** (e.g. 'IEC 61076-2-101' for M12 — the strongest cross-vendor signal). The other interchange axes already have homes: durability = `mechanical.matingCycles`, board attach = `mechanical.mountingStyle`, plating = `material.plating`, circular keying = `familyDetails.coding` |
 | `familyDetails` | the discriminated union — see below |
 
 Three orthogonal attachment axes are kept separate (no overlapping enums): **mountingStyle** (how the board side attaches: tht/smt/pressFit/skedd/panel/cable), **solderProcess** (reflow/wave/selective/handSolder/throughHoleReflow — only when soldered), and **family-specific wire-side termination** (crimp/idc/screw/busbar… in `familyDetails`). Derived/extracted lumped model values (per-contact L/C, extracted impedance) are **not** stored in the datasheet layer — they are simulation outputs (`outputs.signalIntegrity`); only genuinely datasheet-published impedance lives on the relevant family (`familyRf`, `familyDataInterface`).

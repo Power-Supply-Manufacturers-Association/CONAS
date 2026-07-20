@@ -80,6 +80,9 @@
                 "derating": {
                     "$ref": "#/$defs/derating"
                 },
+                "mating": {
+                    "$ref": "#/$defs/mating"
+                },
                 "familyDetails": {
                     "$ref": "./utils.json#/$defs/familyDetails"
                 },
@@ -155,11 +158,90 @@
                 }
             ]
         },
-        "electrical": {
-            "description": "Shared connector electrical characteristics. Family-specific electrical values (RF impedance, FFC contact pitch current, ...) live in familyDetails.",
+        "mating": {
+            "description": "Tier 1: the interchangeability surface — which counterparts this part mates with and under what mechanical contract. Cross-referencing needs this to answer 'does it mate with the existing counterpart?' rather than 'is it parametrically similar?'. Vendors publish the relation series-level (TE typed+orderable, Samtec getsolutionatormates, Molex series, Phoenix inverse edge, WAGO companions).",
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "matesWith": {
+                    "description": "Intermateable counterparts, series-level. One entry per counterpart series.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "manufacturer": {
+                                "description": "Counterpart manufacturer; omit when same-vendor.",
+                                "type": "string"
+                            },
+                            "series": {
+                                "description": "Counterpart series or part-number stem.",
+                                "type": "string"
+                            },
+                            "relation": {
+                                "description": "mates: a pluggable counterpart. intermateableStandard: mates by shared standard interface. mandatoryCompanion / optionalCompanion: WAGO-style required or optional accessories for a working mated set.",
+                                "type": "string",
+                                "enum": [
+                                    "mates",
+                                    "intermateableStandard",
+                                    "mandatoryCompanion",
+                                    "optionalCompanion"
+                                ]
+                            },
+                            "matedHeight": {
+                                "description": "Mated stack height in m, when published (board-to-board).",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            }
+                        },
+                        "required": [
+                            "series",
+                            "relation"
+                        ]
+                    }
+                },
+                "intermateabilityStandard": {
+                    "description": "Standard interface this part mates by (e.g. 'IEC 61076-2-101' for M12) — the strongest cross-vendor interchange signal. The other interchange axes already have homes: durability is mechanical.matingCycles, board attach is mechanical.mountingStyle, plating is material.plating, circular keying is familyDetails.coding.",
+                    "type": "string"
+                }
+            }
+        },
+        "electrical": {
+            "description": "Shared connector electrical characteristics. Family-specific electrical values (RF impedance, FFC contact pitch current, ...) live in familyDetails. Ratings that depend on the counterpart live in pairRatings; the scalar fields are the standalone/worst-case figures.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "pairRatings": {
+                    "description": "Per-counterpart ratings: several connector ratings are PAIR properties, not part properties (one Samtec TSW prints seven current and five voltage ratings depending on counterpart; IP ratings only apply mated+locked). One entry per counterpart series.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "counterpartSeries": {
+                                "description": "Counterpart series this row is rated against.",
+                                "type": "string"
+                            },
+                            "ratedCurrentPerContact": {
+                                "description": "Per-contact current rating in A when mated with this counterpart.",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "ratedVoltage": {
+                                "description": "Voltage rating in V when mated with this counterpart.",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "ipRating": {
+                                "description": "Ingress-protection rating valid only mated and locked (e.g. 'IP67').",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "counterpartSeries"
+                        ]
+                    }
+                },
                 "ratedCurrentPerContact": {
                     "description": "Maximum continuous current per contact at reference ambient, in A.",
                     "type": "number",
