@@ -157,6 +157,56 @@ MATERIALS = [
         "mechanical": {"density": 1600},
     },
     {
+        "id": "ppa-pa6t-gf",
+        "name": "PPA / PA6T (polyphthalamide, glass reinforced)",
+        "category": "dielectric",
+        "standardRef": "ASTM-D149",
+        "description": (
+            "High-temperature semi-aromatic polyamide used for SMT-reflow connector "
+            "housings; WE labels it 'PA6T'. Source: Solvay Amodel AS-1145 HS technical "
+            "data sheet (dry): dielectric constant 4.40 @1 MHz and 4.60 @60 Hz per ASTM "
+            "D150, dielectric strength 22 kV/mm per ASTM D149, volume resistivity "
+            "1.0e16 Ohm-cm per ASTM D257, CTI 550 V per UL 746A."),
+        "electrical": {
+            "relativePermittivity": 4.40,
+            "dielectricStrength": 22e6,
+            "lossTangent": 0.016,
+            "characterizationFrequency": 1e6,
+            "volumeResistivity": 1e14,
+        },
+        "thermal": {"meltingTemperature": 312},
+    },
+    {
+        "id": "abs",
+        "name": "ABS (acrylonitrile butadiene styrene)",
+        "category": "dielectric",
+        "description": (
+            "Dk published as 3.2-3.3 and strength as 20-25 kV/mm; the midpoint Dk and the "
+            "conservative strength are stored. Source: " + PP),
+        "electrical": {
+            "relativePermittivity": 3.25,
+            "dielectricStrength": 20e6,
+            "lossTangent": 0.02,
+            "characterizationFrequency": 1e6,
+            "volumeResistivity": 1e13,
+        },
+        "mechanical": {"density": 1050},
+    },
+    {
+        "id": "pom-acetal",
+        "name": "POM (acetal homopolymer)",
+        "category": "dielectric",
+        "description": "Source: " + PP,
+        "electrical": {
+            "relativePermittivity": 3.7,
+            "dielectricStrength": 20e6,
+            "lossTangent": 0.005,
+            "characterizationFrequency": 1e6,
+            "volumeResistivity": 1e13,
+        },
+        "mechanical": {"density": 1410},
+    },
+    {
         "id": "cusnp-phosphorBronze",
         "name": "Phosphor bronze C51000 (CuSn5P, contact spring)",
         "category": "conductor",
