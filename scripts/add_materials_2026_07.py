@@ -201,6 +201,46 @@ MATERIALS = [
         "mechanical": {"density": 1620},
     },
     {
+        "id": "pa4t",
+        "name": "PA4T (polyamide 4T, semi-aromatic PPA, glass reinforced)",
+        "category": "dielectric",
+        "standardRef": "IEC-60243-1",
+        "description": (
+            "Envalior ForTii F11 (PA4T, 30% glass), as-molded. The best-documented entry "
+            "in this registry: dielectric strength 33 kV/mm per IEC 60243-1, relative "
+            "permittivity 4.2 @100 Hz / 3.9 @1 MHz / 3.8 @1 GHz per IEC 62631-2-1, volume "
+            "resistivity >1e13 Ohm-m per IEC 62631-3-1, CTI >=800 V per IEC 60112, "
+            "density 1460 kg/m3 per ISO 1183, melting 325 C per ISO 11357."),
+        "electrical": {
+            "relativePermittivity": 3.9,
+            "dielectricStrength": 33e6,
+            "characterizationFrequency": 1e6,
+            "volumeResistivity": 1e13,
+        },
+        "thermal": {"meltingTemperature": 325},
+        "mechanical": {"density": 1460},
+    },
+    {
+        "id": "pa46",
+        "name": "PA46 (polyamide 4,6)",
+        "category": "dielectric",
+        "standardRef": "IEC-60243-1",
+        "description": (
+            "DSM/Envalior Stanyl TW341-N, DRY (as-molded). Dielectric strength 25 kV/mm "
+            "per IEC 60243-1, volume resistivity 1e15 Ohm-cm per IEC 60093, CTI 400 V per "
+            "IEC 60112, density 1180 kg/m3 per ISO 1183, melting 295 C per ISO 11357. "
+            "Polyamides absorb moisture and the conditioned figures are materially lower "
+            "(15 kV/mm, 1e9 Ohm-cm); the dry values are recorded to stay consistent with "
+            "the other polyamide entries here, and the conditioned pair is noted so the "
+            "difference is not mistaken for a discrepancy. No permittivity published."),
+        "electrical": {
+            "dielectricStrength": 25e6,
+            "volumeResistivity": 1e13,
+        },
+        "thermal": {"meltingTemperature": 295},
+        "mechanical": {"density": 1180},
+    },
+    {
         "id": "abs",
         "name": "ABS (acrylonitrile butadiene styrene)",
         "category": "dielectric",
