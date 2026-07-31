@@ -307,11 +307,7 @@
                     "description": "conas-materials id of the gasket/seal, when present.",
                     "type": "string"
                 }
-            },
-            "required": [
-                "contactBaseMaterialRef",
-                "housingMaterialRef"
-            ]
+            }
         },
         "plating": {
             "description": "Contact plating stack. Mating-area and termination-area finishes commonly differ; thicknesses are per part, the underlying metals reference conas-materials.",
