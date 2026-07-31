@@ -177,6 +177,30 @@ MATERIALS = [
         "thermal": {"meltingTemperature": 312},
     },
     {
+        "id": "pa9t",
+        "name": "PA9T (polyamide 9T, semi-aromatic, glass reinforced)",
+        "category": "dielectric",
+        "standardRef": "IEC-60243-1",
+        "description": (
+            "Kuraray GENESTAR. The dominant Würth connector housing polymer (450 parts). "
+            "Source: Material Data Center datasheet GENESTAR GN2330-1 — dielectric "
+            "strength 30 kV/mm per IEC 60243-1 (and ASTM D149), volume resistivity "
+            ">1e15 Ohm-cm per ASTM D257, density 1620 kg/m3 per ASTM D792, melting 306 C "
+            "per ISO 11357. RELATIVE PERMITTIVITY IS DELIBERATELY ABSENT: Kuraray does "
+            "not publish it in any freely available source (Material Data Center, "
+            "SpecialChem, their own PA9T catalogue and the CAMPUS public page were all "
+            "checked, and the datasheet was queried directly for permittivity under IEC "
+            "62631-2-1). It is NOT estimated from PA6T or from PPA generally — PA9T is a "
+            "C9 diamine and PA6T a C6, and their measured strengths already differ "
+            "(30 vs 22 kV/mm). Add the figure if Kuraray ever publishes it."),
+        "electrical": {
+            "dielectricStrength": 30e6,
+            "volumeResistivity": 1e13,
+        },
+        "thermal": {"meltingTemperature": 306},
+        "mechanical": {"density": 1620},
+    },
+    {
         "id": "abs",
         "name": "ABS (acrylonitrile butadiene styrene)",
         "category": "dielectric",

@@ -218,14 +218,13 @@
             ]
         },
         {
-            "$comment": "Dielectric: permittivity + breakdown are the defining properties.",
+            "$comment": "Dielectric: breakdown strength is the defining property. Permittivity is NOT required, because requiring both made real materials unrecordable: Kuraray publishes PA9T's dielectric strength (30 kV/mm, IEC 60243-1), volume resistivity, density and melting point, but no permittivity in any free source — so 450 catalogued connectors could carry no housing material at all rather than the four properties their manufacturer does publish. Same failure the material all-or-nothing rule had (ABT #405): one unpublished half of a required pair discarding the published half. Record what the manufacturer states and leave the rest absent.",
             "properties": {
                 "category": {
                     "const": "dielectric"
                 },
                 "electrical": {
                     "required": [
-                        "relativePermittivity",
                         "dielectricStrength"
                     ]
                 }
