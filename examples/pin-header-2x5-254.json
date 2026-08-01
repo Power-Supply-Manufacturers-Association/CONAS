@@ -152,20 +152,23 @@
       "matedHeight": 0.012,
       "pcbFootprint": {
         "pattern": "dualRow",
+        "originDatum": "pin1",
         "pads": [
           {
             "id": "1",
             "x": 0.0,
             "y": 0.0,
-            "shape": "plated-hole",
-            "drill": 0.001
+            "shape": "round",
+            "drill": 0.001,
+            "plated": true
           },
           {
             "id": "2",
             "x": 0.0,
             "y": 0.00254,
-            "shape": "plated-hole",
-            "drill": 0.001
+            "shape": "round",
+            "drill": 0.001,
+            "plated": true
           }
         ]
       },

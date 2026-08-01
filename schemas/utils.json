@@ -865,68 +865,8 @@
                     }
                 },
                 "pcbFootprint": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "pattern": {
-                            "type": "string",
-                            "enum": [
-                                "singleRow",
-                                "dualRow",
-                                "grid",
-                                "custom"
-                            ]
-                        },
-                        "pads": {
-                            "description": "Land/hole pattern. Each pad's id matches a contactSystem contact id where applicable.",
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "x": {
-                                        "type": "number"
-                                    },
-                                    "y": {
-                                        "type": "number"
-                                    },
-                                    "shape": {
-                                        "type": "string",
-                                        "enum": [
-                                            "round",
-                                            "oval",
-                                            "rectangle",
-                                            "roundedRectangle",
-                                            "plated-hole",
-                                            "non-plated-hole"
-                                        ]
-                                    },
-                                    "width": {
-                                        "type": "number",
-                                        "minimum": 0
-                                    },
-                                    "height": {
-                                        "type": "number",
-                                        "minimum": 0
-                                    },
-                                    "drill": {
-                                        "description": "Drill diameter for THT/press-fit pads, in m.",
-                                        "type": "number",
-                                        "minimum": 0
-                                    }
-                                },
-                                "required": [
-                                    "id",
-                                    "x",
-                                    "y",
-                                    "shape"
-                                ]
-                            }
-                        }
-                    }
+                    "description": "Recommended land pattern — the shared PEAS landPattern type (hoisted from CONAS 2026-08; the old local variant conflated hole plating into the shape enum). Each pad's id matches a contactSystem contact id where applicable. The former 'plated-hole' / 'non-plated-hole' shapes are now shape + drill (+ plated:false).",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/landPattern"
                 },
                 "mountingFeatures": {
                     "description": "Board locks, pegs, screw bosses, latches that anchor the body.",
@@ -1185,16 +1125,8 @@
                     "type": "string"
                 },
                 "signalRole": {
-                    "type": "string",
-                    "enum": [
-                        "signal",
-                        "power",
-                        "ground",
-                        "shield",
-                        "differentialP",
-                        "differentialN",
-                        "noConnect"
-                    ]
+                    "description": "Normalized role of this contact — the shared PEAS pinFunction vocabulary (hoisted 2026-08; was a CONAS-local 7-value enum). Connectors customarily use the generic subset (signal, power, ground, shield, differentialP, differentialN, noConnect, mechanical); the full family-wide vocabulary is accepted so a standards-pinout join can label e.g. 'chipSelect' on a card-edge contact.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/pinFunction"
                 },
                 "position": {
                     "description": "Contact location (typically the mate-point), in the part coordinate system.",
