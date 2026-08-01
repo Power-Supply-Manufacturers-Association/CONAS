@@ -1,0 +1,97 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/conas/conas-matedPair.json",
+    "title": "conasMatedPair",
+    "description": "One record of the shared CONAS mated-pair registry (approved 2026-08, ABT #470). RATIONALE: IEC 62153-4-15 §3.7 defines the shielding DUT as 'connector with mating connector and attached connecting cables' — so screening attenuation, transfer impedance and channel S-parameters are structurally properties of a PAIR (sometimes a pair plus a cable assembly), never of a single part. A per-part 'shielded' boolean or a per-part dB figure asserts something the governing standard does not define; this registry is the honest container: a small number of well-attributed pairs with real published evidence, alongside hundreds of thousands of parts that correctly say nothing. Stored one-per-line as NDJSON (data/conas-mated-pairs.ndjson), referenced from tooling by pairId. Evidence entries POINT at the rights holder's publication (pointer-only, like sParameterReference) — nothing is hosted, nothing is synthesized, and absence of a record here is information, not a gap to be back-filled.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "pairId": {
+            "description": "Stable registry key (kebab-case, e.g. 'samtec-seam-seaf').",
+            "type": "string",
+            "minLength": 1
+        },
+        "sideA": {
+            "$ref": "#/$defs/side"
+        },
+        "sideB": {
+            "$ref": "#/$defs/side"
+        },
+        "cableAssembly": {
+            "description": "When the evidence characterises pair + cable (the IEC 62153-4-15 DUT), the cable assembly it was measured with, as published.",
+            "type": "string"
+        },
+        "evidence": {
+            "description": "Published measurements/characterisations of this mated pair. At least one — a pair record without evidence has no reason to exist.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "screeningAttenuation",
+                            "transferImpedance",
+                            "couplingAttenuation",
+                            "sParameters",
+                            "highSpeedCharacterization"
+                        ]
+                    },
+                    "method": {
+                        "description": "Test method or report class the publication states (e.g. 'IEC 62153-4-15 triaxial cell', 'IEC 62153-4-7 tube-in-tube', 'vendor High Speed Characterization report').",
+                        "type": "string"
+                    },
+                    "reference": {
+                        "description": "URI or unambiguous document identifier of the rights holder's publication. Pointer only — never a rehosted copy.",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "notes": {
+                        "description": "What the publication actually contains (frequency range, S:G patterns covered, edge rate...), so a consumer knows before fetching.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "kind",
+                    "reference"
+                ]
+            }
+        },
+        "provenance": {
+            "$ref": "https://psma.com/peas/utils.json#/$defs/provenance"
+        }
+    },
+    "required": [
+        "pairId",
+        "sideA",
+        "sideB",
+        "evidence"
+    ],
+    "$defs": {
+        "side": {
+            "title": "matedPairSide",
+            "description": "One half of the mated pair, series-level (vendors publish intermateability series-level; a specific partNumber may be named when the evidence is for an exact SKU).",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "manufacturer": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "series": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "partNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "manufacturer",
+                "series"
+            ]
+        }
+    }
+}

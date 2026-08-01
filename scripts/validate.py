@@ -103,6 +103,46 @@ def main():
             else:
                 print(f"  citizenship OK (valid PEAS): {os.path.basename(f)}")
 
+    # 4. registry NDJSON data validates against its registry schema, line by line.
+    #    A gate that cannot run FAILS (missing schema or unreadable data is an error).
+    for data_name, schema_id in (
+        ("conas-materials.ndjson", "https://psma.com/conas/conas-materials.json"),
+        ("conas-mated-pairs.ndjson", "https://psma.com/conas/conas-matedPair.json"),
+    ):
+        path = os.path.join(HERE, "data", data_name)
+        if not os.path.exists(path):
+            errors += 1
+            print(f"\nFAIL: registry data missing: data/{data_name}")
+            continue
+        try:
+            schema = registry.get_or_retrieve(schema_id).value.contents
+        except Exception as exc:
+            errors += 1
+            print(f"\nFAIL: registry gate cannot run ({schema_id} not resolvable): {exc}")
+            continue
+        v = Draft202012Validator(schema, registry=registry)
+        n = bad = 0
+        for lineno, line in enumerate(open(path), 1):
+            line = line.strip()
+            if not line:
+                continue
+            n += 1
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError as exc:
+                errors += 1
+                bad += 1
+                print(f"\nFAIL {data_name}:{lineno}: not JSON: {exc}")
+                continue
+            errs = list(v.iter_errors(rec))
+            if errs:
+                errors += len(errs)
+                bad += 1
+                print(f"\nFAIL {data_name}:{lineno}:")
+                for e in errs[:10]:
+                    print("   ", list(e.path), "->", e.message)
+        print(f"  registry OK ({n} records, {bad} bad): data/{data_name}")
+
     print("\n" + ("PASS" if errors == 0 else f"FAIL ({errors} errors)"))
     sys.exit(1 if errors else 0)
 

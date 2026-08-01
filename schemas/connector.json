@@ -86,6 +86,14 @@
                 "familyDetails": {
                     "$ref": "./utils.json#/$defs/familyDetails"
                 },
+                "sParameters": {
+                    "description": "References to vendor-published S-parameter files for this part (pointer-only policy — see the PEAS type; approved 2026-08, ABT #470). Note most vendor Touchstone characterises a MATED PAIR — pair-level evidence belongs in the conas-matedPair registry; entries here are for files the vendor publishes against this single part number.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "https://psma.com/peas/utils.json#/$defs/sParameterReference"
+                    }
+                },
                 "provenance": {
                     "description": "Data-provenance trail (see provenance).",
                     "$ref": "https://psma.com/peas/utils.json#/$defs/provenance"
@@ -276,9 +284,75 @@
                     "minimum": 0
                 },
                 "creepage": {
-                    "description": "Shortest surface distance between adjacent contacts (or contact and shield), in m. Intrinsic IEC 60664 selection rating.",
+                    "description": "Shortest surface distance between adjacent contacts (or contact and shield), in m. Intrinsic IEC 60664 selection rating. LEGACY LIMITATION (ABT #437): this scalar does not say WHICH pair of conductors it refers to, which makes it uninterpretable for insulation coordination — prefer insulationPaths, which carries the reference pair and the full IEC 60664-1 context by construction.",
                     "type": "number",
                     "minimum": 0
+                },
+                "insulationPaths": {
+                    "description": "IEC 60664-1 insulation coordination, per named conductor pair (approved 2026-08, ABT #468). Each path makes the chain's inputs CO-RESIDENT BY CONSTRUCTION — the failure mode this replaces is 1,561 creepage scalars whose reference pair, pollution degree and material group were scattered or absent, leaving exactly 0 interpretable records. Vendor-declared facts only; nothing here is computed.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "from": {
+                                "description": "First conductor of the pair: a contactSystem contact id, or 'shell', or 'group:<name>' for a potential group (e.g. 'group:line').",
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "to": {
+                                "description": "Second conductor of the pair, same vocabulary as 'from'.",
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "creepage": {
+                                "description": "Shortest surface distance along the insulation between this pair, in m.",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "clearance": {
+                                "description": "Shortest air distance between this pair, in m.",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "workingVoltage": {
+                                "description": "Working voltage this path is rated for, in V (RMS for AC unless the datasheet states otherwise).",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "ratedImpulseVoltage": {
+                                "description": "Rated impulse withstand (surge) voltage U_imp for this path, in V (e.g. 6000 for a 6 kV / OVC III declaration).",
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                            },
+                            "pollutionDegree": {
+                                "description": "Pollution degree this path's figures are declared for. May refine environmental.pollutionDegree when a vendor declares different figures per rating context (VDE vs UL).",
+                                "$ref": "https://psma.com/peas/utils.json#/$defs/pollutionDegree"
+                            },
+                            "overvoltageCategory": {
+                                "$ref": "https://psma.com/peas/utils.json#/$defs/overvoltageCategory"
+                            },
+                            "materialGroup": {
+                                "description": "IEC 60664-1 insulating material group of the surface the creepage runs across (I: CTI>=600, II: 400-599, IIIa: 175-399, IIIb: 100-174). When the housing polymer is known, the material's CTI in conas-materials is the primary source; this field carries the vendor's own declaration.",
+                                "type": "string",
+                                "enum": [
+                                    "I",
+                                    "II",
+                                    "IIIa",
+                                    "IIIb"
+                                ]
+                            },
+                            "ratingContext": {
+                                "description": "Which approval regime the figures belong to when a vendor declares several (e.g. 'IEC/VDE', 'UL/CSA').",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "from",
+                            "to"
+                        ]
+                    }
                 }
             },
             "required": []
