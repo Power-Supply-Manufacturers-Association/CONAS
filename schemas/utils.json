@@ -817,7 +817,7 @@
                     "$comment": "All geometry fields are in SI metres (canonical, no per-document unit switch). External CAD files declare their own native unit in cadModels[].units."
                 },
                 "boundingEnvelope": {
-                    "description": "Overall body extents (unmated), in m.",
+                    "description": "Overall body extents (unmated), in m. All three axes optional (approved 2026-08, ABT #478): for a regular header/board-to-board SERIES the datasheet fixes the cross-section (width x height) but gives length as a formula of position count, so per-part length is routinely not a stated value — and for those parts the length is already implied by geometry.parametric.contactArray. Record whatever axes the vendor states; do not invent the missing one.",
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
@@ -833,12 +833,7 @@
                             "type": "number",
                             "exclusiveMinimum": 0
                         }
-                    },
-                    "required": [
-                        "length",
-                        "width",
-                        "height"
-                    ]
+                    }
                 },
                 "matedHeight": {
                     "description": "Profile height above board when mated, in m.",
@@ -1015,8 +1010,7 @@
                 }
             },
             "required": [
-                "coordinateSystem",
-                "boundingEnvelope"
+                "coordinateSystem"
             ]
         },
         "contactSystem": {
