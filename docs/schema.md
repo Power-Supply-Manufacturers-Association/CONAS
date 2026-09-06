@@ -67,7 +67,7 @@ RAS splits at the top level (`resistor` | `varistor`) because the two device typ
 ## Two tiers
 
 ### Tier 1 — catalog / parametric (`connector.manufacturerInfo.datasheetInfo`)
-Mirrors the RAS/CAS datasheet pattern. Blocks:
+Mirrors the RAS/CAS datasheet pattern. Four blocks are **required** — `part`, `electrical`, `mechanical`, `familyDetails` — and required here means *populated*, not merely present. Draft 2020-12 satisfies `required` by the key existing, so `"electrical": {}` and `"mechanical": {}` used to validate while carrying nothing; both now also carry **`minProperties: 1`**, so an empty block is rejected. (`part` and `familyDetails` need no such guard: they cannot be empty already — `part` requires `partNumber` through the PEAS part base, and every `familyDetails` variant requires its `family` const.) Blocks:
 
 | Block | Holds |
 |---|---|

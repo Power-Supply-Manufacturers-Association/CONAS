@@ -66,9 +66,13 @@
                     "$ref": "#/$defs/part"
                 },
                 "electrical": {
+                    "$comment": "minProperties enforces what `required` alone cannot: draft 2020-12 satisfies `required` by key PRESENCE, so \"electrical\": {} passed while carrying no data. A required block must actually state something.",
+                    "minProperties": 1,
                     "$ref": "#/$defs/electrical"
                 },
                 "mechanical": {
+                    "$comment": "minProperties enforces what `required` alone cannot: draft 2020-12 satisfies `required` by key PRESENCE, so \"mechanical\": {} passed while carrying no data. A required block must actually state something.",
+                    "minProperties": 1,
                     "$ref": "./utils.json#/$defs/mechanical"
                 },
                 "material": {

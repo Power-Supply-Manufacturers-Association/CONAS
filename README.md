@@ -46,6 +46,7 @@ Runs three gates: every schema meta-validates and its `$ref`s resolve; each `exa
 
 - JSON Schema **draft 2020-12**; `$id`s under `https://psma.com/conas/`.
 - **Closed objects** (`additionalProperties: false`) everywhere; **complete discriminated unions** (`oneOf` with a `family` const) on every type break.
+- **A required object must carry something**: `required` alone is satisfied by the key being present, so required blocks that would otherwise accept `{}` also declare `minProperties: 1` (`datasheetInfo.electrical`, `datasheetInfo.mechanical`). Empty *arrays* are left alone — an empty list can be a real statement.
 - **No derived/computed values** in the datasheet layer — extracted model parameters are simulation *outputs*, not catalog inputs.
 - **Material properties live once** on the referenced `conas-materials` record, never copied onto the part.
 - Three orthogonal attachment axes kept separate: `mechanical.mountingStyle` (board attach), `environmental.solderProcess` (solder), family-specific wire-side `termination`.
