@@ -1,0 +1,432 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://psma.com/conas/connectorAccessory.json",
+    "$comment": "SPDX-License-Identifier: MIT",
+    "title": "connectorAccessory",
+    "description": "A connector-system ACCESSORY: a real, orderable part that belongs to a connector system but is not itself a mated connector — backshells, bare crimp/solder contacts, hoods and shells, caps, marker cards, TPA/CPA retainers, cable glands, seals, mounting hardware, jumper bars, splices, contact inserts, transceiver cages, RF adapters, tooling, coding keys, EMI shields, LED holders, sealing plugs and IC sockets. These parts CANNOT be described by connector.json: it requires part + electrical + mechanical + familyDetails, and an accessory is structurally missing three of the four (a backshell carries no current, has no connector mechanics, and belongs to no connector family — it clips onto one). The record is an IDENTITY plus a HOST-SYSTEM REFERENCE plus, where the vendor publishes them, a temperature range, a position count and (for bare contacts only) real ratings. accessoryDetails is a two-branch closed oneOf: one shared shape whose 'kind' enumerates the twenty classes that share one field profile, and a distinct 'contact' branch for bare contacts, whose shape genuinely differs.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "manufacturerInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/name"
+                },
+                "reference": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/reference"
+                },
+                "status": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/status"
+                },
+                "description": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/description"
+                },
+                "orderCode": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/orderCode"
+                },
+                "datasheetUrl": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/datasheetUrl"
+                },
+                "family": {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo/properties/family"
+                },
+                "datasheetInfo": {
+                    "$ref": "#/$defs/datasheetInfo"
+                }
+            },
+            "required": [
+                "name",
+                "datasheetInfo"
+            ]
+        },
+        "distributorsInfo": {
+            "description": "Where to buy this accessory.",
+            "type": "array",
+            "items": {
+                "$ref": "https://psma.com/peas/utils.json#/$defs/distributorInfo"
+            }
+        },
+        "geometry": {
+            "description": "Tier 2. 3D representation of the accessory body, reusing the connector geometry type (bounding envelope, PCB footprint for board-mounted accessories such as cages and IC sockets, mounting features, external CAD references). Optional; populate only for parts you model or render.",
+            "$ref": "./utils.json#/$defs/geometry"
+        }
+    },
+    "$defs": {
+        "accessoryKindGeneric": {
+            "description": "The twenty accessory classes that share one field profile (identity + host system + optional temperature/positions, differing by three or four descriptors). 'contact' is deliberately NOT here — bare contacts carry real ratings and a genuinely different shape, so they get their own union branch. 'other' is an explicit, closed escape hatch for the long tail of one-off accessories (grounding blocks, shunts, backplates, motor connection kits); it is a named class, not an open door.",
+            "type": "string",
+            "enum": [
+                "backshell",
+                "hoodShell",
+                "capCover",
+                "identificationLabel",
+                "terminalPositionAssurance",
+                "cableEntry",
+                "sealGasket",
+                "sealingPlug",
+                "mountingHardware",
+                "busbarJumper",
+                "cableSplice",
+                "contactInsert",
+                "transceiverCage",
+                "rfAdapter",
+                "tooling",
+                "codingKey",
+                "emiShield",
+                "lightingHolder",
+                "icSocket",
+                "other"
+            ]
+        },
+        "accessoryKind": {
+            "description": "Every accessory class, including 'contact'. Anchor for the requirement side (inputs/designRequirements.accessoryKind) so the selection vocabulary cannot drift from the part vocabulary. Defined as the generic twenty plus 'contact' rather than as a second list, so there is exactly one place a class is named.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/accessoryKindGeneric"
+                },
+                {
+                    "type": "string",
+                    "const": "contact"
+                }
+            ]
+        },
+        "datasheetInfo": {
+            "description": "All parametric information published for the accessory. Only 'part' and 'accessoryDetails' are required: unlike a connector, an accessory legitimately has no electrical block (80% of the measured population) and no mechanical block (84%). Where those blocks ARE present they carry real data — this schema never demands an empty object, so no minProperties guard is needed and none is added.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "part": {
+                    "$ref": "#/$defs/part"
+                },
+                "hostSystem": {
+                    "$ref": "#/$defs/hostSystem"
+                },
+                "mechanical": {
+                    "description": "Body dimensions and, where the accessory is position-counted (TPA retainers, contact inserts, IC sockets, backshells), positions/rows/pitch. Reuses the connector mechanical block unchanged and WITHOUT minProperties — an accessory with no published mechanics is a normal record, not a defective one.",
+                    "$ref": "./utils.json#/$defs/mechanical"
+                },
+                "electrical": {
+                    "$ref": "#/$defs/electrical"
+                },
+                "material": {
+                    "description": "Bill of materials by reference into conas-materials.json. Same type as the connector block (housing/contact/shield/seal refs plus the plating stack) — an accessory's plating and housing polymer are the same vocabulary.",
+                    "$ref": "./connector.json#/$defs/material"
+                },
+                "environmental": {
+                    "description": "Environmental and process ratings. Same type as the connector block; operatingTemperature is the single most commonly published accessory rating (61% of the measured population).",
+                    "$ref": "./connector.json#/$defs/environmental"
+                },
+                "accessoryDetails": {
+                    "$ref": "#/$defs/accessoryDetails"
+                },
+                "provenance": {
+                    "description": "Data-provenance trail (see provenance).",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/provenance"
+                }
+            },
+            "required": [
+                "part",
+                "accessoryDetails"
+            ]
+        },
+        "part": {
+            "description": "Basic accessory part identification. The accessory class is NOT here — it is the discriminator on accessoryDetails (single source of truth), exactly as the connector family lives on familyDetails.",
+            "allOf": [
+                {
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/datasheetInfoPartBase"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "matingPolarity": {
+                            "description": "Physical mating polarity, where the accessory has one. Meaningful mainly on bare contacts (populated on 89% of them) and on hermaphroditic backshells; omit for parts that do not mate.",
+                            "type": "string",
+                            "enum": [
+                                "male",
+                                "female",
+                                "hermaphroditic",
+                                "genderless"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "unevaluatedProperties": false
+        },
+        "hostSystem": {
+            "description": "The compatibility pointer: which connector system this accessory belongs to. This is the field that makes an accessory orderable — 'the backshell for Mini-Fit Jr., 10 circuits' — and it is populated on effectively the entire measured population as the vendor's SERIES string. It is NOT a CONAS family const.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "series": {
+                    "description": "Vendor series / product-line the accessory fits (e.g. 'Mini-Fit Jr.', 'Micro-Fit+', 'AMPLIMITE', 'HDC', 'SFP-DD').",
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "description": "Manufacturer of the host connector system, when it differs from the accessory's own manufacturer (third-party backshells, aftermarket tooling).",
+                    "type": "string"
+                },
+                "standard": {
+                    "description": "Interface standard the host system is defined by, when there is one (e.g. 'SFP-DD', 'QSFP-DD', 'Zhaga Book 18', 'IEC 61076-2-101', 'MIL-DTL-38999').",
+                    "type": "string"
+                },
+                "matesWithPartNumbers": {
+                    "description": "Specific host part numbers this accessory is published against, when the vendor lists them.",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "minItems": 1
+                },
+                "shellSize": {
+                    "description": "Host shell/frame size designation (e.g. '17', '1', 'B', 'DA'). A string because vendors publish it as an alphanumeric code, not a length.",
+                    "type": "string"
+                }
+            }
+        },
+        "electrical": {
+            "description": "Electrical ratings, present only on the accessory classes that actually carry current — bare contacts (86% carry a per-contact current rating), contact inserts, jumper bars, IC sockets — plus the characteristic impedance of coaxial contacts and RF adapters. Deliberately a small block: it is NOT the connector electrical block, because none of pairRatings, insulationPaths, clearance/creepage or dielectric withstanding is published for accessories.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ratedCurrentPerContact": {
+                    "description": "Maximum continuous current per contact at reference ambient, in A.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "ratedCurrentReferenceTemperature": {
+                    "description": "Ambient temperature the current rating is referenced to, in Celsius.",
+                    "type": "number"
+                },
+                "ratedVoltage": {
+                    "description": "Maximum continuous working voltage, in V.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "contactResistance": {
+                    "description": "Contact resistance, in Ohm.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                },
+                "characteristicImpedance": {
+                    "description": "Characteristic impedance, in Ohm — coaxial contacts and RF adapters (e.g. 50, 75).",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            }
+        },
+        "accessoryDetails": {
+            "description": "Closed two-branch union, each branch pinning 'kind'. The branches are disjoint by construction: the generic branch's kind enum excludes 'contact' and the contact branch pins kind to the const 'contact', so no record can match both and none can misclassify. TWO branches rather than twenty-one because the measured field profile is near-constant across the twenty generic classes (identity + host system + three or four descriptors); duplicating one shape twenty times would be twenty copies of the same object. 'contact' is separate because its shape genuinely differs — it is the one class with real ratings, a termination, a wire gauge and a contact size.",
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/accessoryGeneric"
+                },
+                {
+                    "$ref": "#/$defs/accessoryContact"
+                }
+            ]
+        },
+        "accessoryGeneric": {
+            "description": "The shared accessory shape. Every field except 'kind' is optional — the whole point of the family is that these parts publish an identity and a host system and often nothing else. The descriptors are the union of what the twenty classes distinguish themselves by; a class populates the three or four that apply to it. Position count, pitch, body dimensions and mounting style are NOT here: they live in the reused mechanical block, and ratings live in electrical, so nothing is stated twice.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "description": "Accessory class. Pinned to the twenty-value generic enum; a bare contact must use the contact branch instead.",
+                    "$ref": "#/$defs/accessoryKindGeneric"
+                },
+                "shellSize": {
+                    "description": "The accessory's OWN shell/frame size designation, where it has one distinct from the host's (hoods, backshells, cable clamp kits). Alphanumeric vendor code.",
+                    "type": "string"
+                },
+                "cableExit": {
+                    "description": "Direction the cable leaves the accessory (backshells, hoods, glands).",
+                    "type": "string",
+                    "enum": [
+                        "straight",
+                        "rightAngle",
+                        "angled45",
+                        "angled30",
+                        "variable"
+                    ]
+                },
+                "cableDiameterRange": {
+                    "description": "Accepted cable outer-diameter range, in m (glands, backshells, clamp kits, splices). A single published diameter is expressed with minimum = maximum.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "minimum": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "maximum": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    }
+                },
+                "threadDesignation": {
+                    "description": "Thread the accessory carries, as published (e.g. 'M20 x 1.5', 'PG16', '4-40 UNC', '5/16-18'). Glands, screwlocks, nuts, studs.",
+                    "type": "string"
+                },
+                "sealType": {
+                    "description": "Kind of seal, for sealGasket and sealingPlug.",
+                    "type": "string",
+                    "enum": [
+                        "oRing",
+                        "wireSeal",
+                        "cavitySeal",
+                        "panelGasket",
+                        "interfaceSeal",
+                        "emiGasket",
+                        "boot",
+                        "sleeve"
+                    ]
+                },
+                "shielded": {
+                    "description": "Whether the accessory provides cable/EMI shielding continuity (metallised backshells, EMI hoods and shields).",
+                    "type": "boolean"
+                },
+                "tethered": {
+                    "description": "Whether a cap or cover is captive on a lanyard/chain rather than loose.",
+                    "type": "boolean"
+                },
+                "markingText": {
+                    "description": "Pre-printed legend on a marker card / marking strip / label holder, verbatim (e.g. '11-20', 'L1 L2 L3 N PE'). Blank strips omit it.",
+                    "type": "string"
+                },
+                "portsWide": {
+                    "description": "Transceiver cage ports across (the 4 of a 1-by-4 cage).",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "portsHigh": {
+                    "description": "Transceiver cage ports stacked (the 2 of a 2-by-4 belly-to-belly cage).",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "interfaceA": {
+                    "description": "First RF interface of an adapter (e.g. 'SMA', 'N', 'BNC').",
+                    "type": "string"
+                },
+                "interfaceB": {
+                    "description": "Second RF interface of an adapter; equals interfaceA for an in-series adapter.",
+                    "type": "string"
+                },
+                "hardwareType": {
+                    "description": "What the piece of mounting hardware is.",
+                    "type": "string",
+                    "enum": [
+                        "nut",
+                        "screw",
+                        "screwlock",
+                        "jackscrew",
+                        "washer",
+                        "bracket",
+                        "rail",
+                        "threadedInsert",
+                        "clip",
+                        "standoff",
+                        "stud",
+                        "other"
+                    ]
+                },
+                "toolType": {
+                    "description": "What the tool does.",
+                    "type": "string",
+                    "enum": [
+                        "insertion",
+                        "extraction",
+                        "crimp",
+                        "applicator",
+                        "press",
+                        "die",
+                        "gauge",
+                        "other"
+                    ]
+                },
+                "codingPosition": {
+                    "description": "Coding / polarising position designation as the vendor publishes it (e.g. 'A', 'B', '1-4'). Coding keys and voiding keys.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "kind"
+            ]
+        },
+        "accessoryContact": {
+            "description": "A bare contact: crimp, solder, IDC, press-fit or coaxial terminals sold loose, to be loaded into a housing. Its own branch because its shape genuinely differs from the other twenty — it is a current-carrying conductor terminated to a wire, so it carries electrical ratings (86% of the measured rows publish a per-contact current), a termination style, an accepted wire-gauge range and a contact size. Plating is NOT restated here: it lives in the reused material.contactPlating block.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "contact"
+                },
+                "terminationStyle": {
+                    "description": "How the contact attaches to the conductor.",
+                    "type": "string",
+                    "enum": [
+                        "crimp",
+                        "solder",
+                        "solderCup",
+                        "idc",
+                        "pressFit",
+                        "screw",
+                        "wireWrap",
+                        "weld",
+                        "pierce",
+                        "pokeIn"
+                    ]
+                },
+                "wireGaugeRange": {
+                    "description": "Accepted conductor cross-section range (AWG and/or SI area, in m^2). Reuses the CONAS terminal-block type unchanged.",
+                    "$ref": "./utils.json#/$defs/wireGaugeRange"
+                },
+                "contactSize": {
+                    "description": "Contact size designation as published (e.g. '16', '22', '0', '12'). A string because it is a size CODE, not a length — the MIL/AMP size scale is ordinal and vendors also publish letters.",
+                    "type": "string"
+                },
+                "contactRetention": {
+                    "description": "How the contact is retained once loaded into its housing.",
+                    "type": "string",
+                    "enum": [
+                        "lockingLance",
+                        "retentionClip",
+                        "shoulder",
+                        "screwMachine",
+                        "none"
+                    ]
+                }
+            },
+            "required": [
+                "kind"
+            ],
+            "$comment": "A contact must say something that makes it a contact. 'kind' alone is not a part: a record carrying only {kind: 'contact'} names a class and describes nothing, and would be indistinguishable from an unsourced seed while claiming to be a real bare terminal. At least one of the four distinguishing fields must be present — the termination, the wire it accepts, its size, or how it is retained. This is the branch's whole reason for existing, so it is enforced here rather than left to a reviewer.",
+            "anyOf": [
+                {
+                    "required": [
+                        "terminationStyle"
+                    ]
+                },
+                {
+                    "required": [
+                        "wireGaugeRange"
+                    ]
+                },
+                {
+                    "required": [
+                        "contactSize"
+                    ]
+                },
+                {
+                    "required": [
+                        "contactRetention"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,100 @@
+{
+    "inputs": {
+        "operatingPoints": [
+            {
+                "name": "Harness exit, cabinet ambient",
+                "conditions": {
+                    "ambientTemperature": 40
+                },
+                "excitationsPerPort": [
+                    {
+                        "port": "SHIELD",
+                        "excitation": {
+                            "frequency": 0,
+                            "current": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 0.0,
+                                    "offset": 0.0,
+                                    "rms": 0.0
+                                }
+                            },
+                            "voltage": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 0.0,
+                                    "offset": 0.0,
+                                    "rms": 0.0
+                                }
+                            },
+                            "name": "No conduction \u2014 a backshell is a mechanical strain relief, it carries neither current nor potential"
+                        }
+                    }
+                ]
+            }
+        ],
+        "designRequirements": {
+            "name": "Strain-relief backshell for the 10-circuit Mini-Fit Jr. harness plug",
+            "accessoryKind": "backshell",
+            "hostSeries": "Mini-Fit Jr.",
+            "minimumPositions": 10,
+            "ambientTemperatureRange": {
+                "minimum": -40,
+                "maximum": 105
+            }
+        }
+    },
+    "connectorAccessory": {
+        "manufacturerInfo": {
+            "name": "Molex",
+            "reference": "2047230010",
+            "status": "production",
+            "family": "Mini-Fit Jr.",
+            "description": "Mini-Fit Jr. Hermaphroditic Backshell, 10 Circuits, Low-Halogen, Black",
+            "datasheetUrl": "https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/204/204723/2047230010_sd.pdf",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "2047230010",
+                    "series": "Mini-Fit Jr.",
+                    "description": "Mini-Fit Jr. Hermaphroditic Backshell, 10 Circuits, Low-Halogen, Black",
+                    "matingPolarity": "hermaphroditic"
+                },
+                "hostSystem": {
+                    "series": "Mini-Fit Jr.",
+                    "manufacturer": "Molex"
+                },
+                "mechanical": {
+                    "positions": 10
+                },
+                "environmental": {
+                    "operatingTemperature": {
+                        "minimum": -40.0,
+                        "maximum": 105.0
+                    }
+                },
+                "accessoryDetails": {
+                    "kind": "backshell",
+                    "cableExit": "straight",
+                    "shielded": false
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerParametric",
+                        "sourceName": "Molex product catalogue",
+                        "sourceUrl": "https://www.molex.com/en-us/products/part-detail/2047230010",
+                        "retrievedDate": "2026-06-24",
+                        "fields": [
+                            "part.matingPolarity",
+                            "mechanical.positions",
+                            "environmental.operatingTemperature"
+                        ]
+                    }
+                ]
+            }
+        },
+        "distributorsInfo": []
+    },
+    "outputs": [
+        {}
+    ]
+}

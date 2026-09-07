@@ -1,13 +1,13 @@
 # CONAS — Connector Agnostic Structure
 
-Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic **connectors**, part of the OpenConverters / PEAS family. Every valid CONAS document is also a valid PEAS document (`inputs` + `connector` + `outputs`).
+Vendor-neutral JSON Schema (draft 2020-12) data model for electrical/electronic **connectors** and the **accessories** that belong to a connector system, part of the OpenConverters / PEAS family. A CONAS document is `inputs` + `outputs` + exactly one component — either a `connector` or a `connectorAccessory` — and is also a valid PEAS document.
 
 `$id` namespace: `https://psma.com/conas/...`. Cross-repo `$ref`s resolve by absolute `$id` URI against the sibling repos checked out alongside this one (PEAS in particular). CONAS reuses the PEAS shared primitives (`dimensionWithTolerance`, `manufacturerInfo`, `distributorInfo`, `datasheetInfoPartBase`, `datasheetInfoMechanical`, `multiPortOperatingPoint`, `outputBase`, `designRequirementsBase`) — it is **not** self-contained the way MAS is.
 
 ## At a glance
 
 ```
-CONAS  (https://psma.com/conas/CONAS.json)   { inputs, connector, outputs }
+CONAS  (https://psma.com/conas/CONAS.json)   { inputs, outputs, oneOf[ connector | connectorAccessory ] }
 │
 ├─ inputs
 │   ├─ operatingPoints[]        → PEAS multiPortOperatingPoint (per-net current/voltage + ambient)
@@ -49,6 +49,25 @@ CONAS  (https://psma.com/conas/CONAS.json)   { inputs, connector, outputs }
 │                    normalForce, materialRef, crossSection, pathLength},
 │         nets[] (contact→net map), matingInterface, shield }
 │
+├─ connectorAccessory   ◄── the OTHER component branch: a connector-system part that is
+│   │                        not itself a mated connector (backshell, bare contact, hood,
+│   │                        cap, marker card, TPA retainer, gland, seal, cage, tool, …)
+│   ├─ manufacturerInfo
+│   │   └─ datasheetInfo
+│   │       ├─ part              { partNumber, series, case, description, matingPolarity }
+│   │       ├─ hostSystem        { series, manufacturer, standard, matesWithPartNumbers[],
+│   │       │                      shellSize }   ◄── the compatibility pointer
+│   │       ├─ mechanical        → the SAME conas/utils mechanical block, no minProperties
+│   │       ├─ electrical        { ratedCurrentPerContact, ratedCurrentReferenceTemperature,
+│   │       │                      ratedVoltage, contactResistance, characteristicImpedance }
+│   │       ├─ material          → connector.json#/$defs/material   (reused verbatim)
+│   │       ├─ environmental     → connector.json#/$defs/environmental (reused verbatim)
+│   │       ├─ accessoryDetails  ◄── oneOf, TWO branches, each pinning `kind`
+│   │       │     accessoryGeneric  kind ∈ 20 classes  │  accessoryContact  kind = contact
+│   │       └─ provenance[]
+│   ├─ distributorsInfo[]
+│   └─ geometry                ◄── TIER 2: 3D (optional, same type as connector.geometry)
+│
 └─ outputs[]   (outputs[i] ↔ operatingPoints[i], each with PEAS outputBase provenance)
      contactLosses │ thermal │ currentDerating │ insulationStress │ signalIntegrity │ mechanicalLife
 
@@ -63,6 +82,8 @@ conas-materials.json  ◄── shared general-purpose material registry (NDJSON
 ## Why a single `connector` field (not RAS-style per-type discriminators)
 
 RAS splits at the top level (`resistor` | `varistor`) because the two device types share almost no parametrics. Connectors are the opposite: every family shares a large parametric core (positions, pitch, current/voltage rating, mating cycles, plating, mount) and differs only in a small block. So CONAS keeps **one** `connector` field and discriminates the **family internally** on `connector.datasheetInfo.familyDetails.family`. That field is the single source of truth for the family (catalog filtering reads it there).
+
+That argument covers *connectors*. It does **not** stretch to the accessories that ship with a connector system — a backshell shares none of that parametric core, because it carries no current and has no contacts. Those are a second top-level component, `connectorAccessory`, described below.
 
 ## Two tiers
 
@@ -96,6 +117,174 @@ Optional, closed blocks populated only for parts you model in 3D, render, or sim
 
 - **`geometry`** — hybrid 3D body: `coordinateSystem` (units + origin datum + mate axis), `boundingEnvelope` (all three axes optional since 2026-08 — length is often a per-series formula and is implied by the contactArray), `matedHeight`, `keepOut`, `pcbFootprint` (the shared **PEAS `landPattern`** type — hoisted 2026-08; pad ids match contact ids; shape is pure geometry, through-board character is `drill`/`plated`), `mountingFeatures`, a `parametric` generator (housing extrusion profile + contact array) for the regular families, and `cadModels[]` references to external STEP/IGES/glTF/3MF/STL with units, LOD and checksum. Parametric and CAD are complementary — parametric reconstructs regular bodies; CAD carries the exact organic housing.
 - **`contactSystem`** — the conductive system (consumed by SI extraction and EM/thermal simulation): `contacts[]` (id, pinName, signalRole — the shared **PEAS `pinFunction`** vocabulary, position, per-contact currentRating/contactResistance/normalForce, base+plating material refs, cross-section, path length), `nets[]` (contact→net map for current/voltage injection), `matingInterface` (partner part, contact type, mate/unmate force, wipe), `shield`.
+
+## `connectorAccessory` — the second component branch
+
+A connector system is sold as more than its mated connectors. Backshells, loose crimp
+contacts, hoods, protective caps, marker cards, TPA retainers, cable glands, wire seals,
+screwlocks, jumper bars, splices, contact inserts, SFP cages, RF adapters, insertion
+tools, coding keys, EMI shields, LED holders, cavity plugs and IC sockets are all real,
+orderable parts with part numbers, temperature ratings and datasheets — and **none of
+them is a connector**.
+
+### Why they are not a fifteenth `familyDetails` branch
+
+`connector.datasheetInfo` requires four blocks: `part`, `electrical`, `mechanical`,
+`familyDetails`. Measured over the 18,995 such parts sitting in the TAS connector
+quarantine, an accessory is missing three of the four *structurally*, not for want of
+sourcing:
+
+| what `connector.json` requires | accessories that can supply it |
+|---|---|
+| `electrical` (with `minProperties: 1`) | 3,716 of 18,995 — **80% carry `"electrical": {}`**, literally empty |
+| `mechanical` (with `minProperties: 1`) | 3,008 of 18,995 — **84% carry `"mechanical": {}`** |
+| `familyDetails` (14-branch `oneOf`) | **0 of 18,995** |
+
+A backshell has no current rating because a backshell carries no current. A marker card
+has no pitch, no mating cycles and no insertion force. A TPA retainer is not a
+`wireToBoard` connector; it is a plastic part that clips into one. No amount of datasheet
+work changes any of that.
+
+Admitting them as a fifteenth family would have meant relaxing `electrical` and
+`mechanical` from required to optional on `connector.json` — re-opening exactly the
+empty-block hole `minProperties: 1` was added to close, for all fourteen real families.
+So accessories get their own top-level component, a sibling of `connector`, and
+`CONAS.json` becomes a closed two-branch `oneOf`: a document carries a `connector` **or**
+a `connectorAccessory`, never both and never neither.
+
+### Why TWO union branches, not twenty-one
+
+The obvious shape is one `oneOf` branch per accessory class. It is the wrong shape here:
+the measured field profile is **near-constant across the classes** — identity, plus a
+host-system pointer, plus (sometimes) a temperature range and a position count, differing
+by only three or four descriptors. Twenty-one branches would be twenty-one copies of one
+object, and the house DRY rule cuts against that.
+
+So `accessoryDetails` is a `oneOf` over **two** branches:
+
+- **`accessoryGeneric`** — one shared shape whose `kind` enumerates the twenty classes
+  that share that profile.
+- **`accessoryContact`** — a distinct branch for bare crimp/solder/coax contacts
+  (`kind: "contact"`), because their shape genuinely differs: 3,944 rows, 84% with a real
+  per-contact current rating, 89% with a mating polarity, plus a termination, a wire
+  gauge and a contact size.
+
+The two branches are **disjoint by construction**: the generic enum excludes `contact`
+and the contact branch pins `kind` to the `const` `"contact"`. No record can match both,
+so nothing misclassifies — a TPA retainer cannot be silently validated as a cage, and a
+contact cannot be validated as a backshell (the MAS wire-union lesson). The union is a
+real discriminator, not decoration.
+
+### `connectorAccessory` blocks
+
+Only `part` and `accessoryDetails` are required inside `datasheetInfo`. There is **no
+`minProperties` guard** anywhere in this family, and that is deliberate: for a connector
+an empty `electrical` block is a defect, for an accessory the *absence* of the block is
+the truth. The family never asks for an empty object, so it never has to reject one.
+
+| Block | Required | Holds |
+|---|---|---|
+| `part` | **yes** | `allOf` over the PEAS `datasheetInfoPartBase` (partNumber, series, case, description) plus `matingPolarity` (male/female/hermaphroditic/genderless — meaningful mainly on bare contacts and hermaphroditic backshells), sealed with top-level `unevaluatedProperties: false`. The accessory class is **not** here: it lives on `accessoryDetails.kind`, the single source of truth, exactly as the connector family lives on `familyDetails.family` |
+| `hostSystem` | no | **The compatibility pointer, and the field that makes an accessory orderable** — "the backshell for Mini-Fit Jr., 10 circuits". `series` (the vendor SERIES string: `Mini-Fit Jr.`, `Micro-Fit+`, `AMPLIMITE`, `SFP-DD` — populated on 18,993 of 18,995 measured rows), `manufacturer` (when the host is another vendor's system), `standard` (`SFP-DD`, `Zhaga Book 18`, `MIL-DTL-38999`), `matesWithPartNumbers[]`, `shellSize`. Note this is a *vendor series*, **not** a CONAS family const |
+| `mechanical` | no | `$ref` to `conas/utils.json#/$defs/mechanical` — the **same block the connector uses**, reused unchanged and without `minProperties`. Position count, rows, pitch, mounting style and body dimensions all live here, so `accessoryDetails` never restates them |
+| `electrical` | no | A small, accessory-specific block — `ratedCurrentPerContact`, `ratedCurrentReferenceTemperature`, `ratedVoltage`, `contactResistance`, `characteristicImpedance`. Deliberately **not** the connector `electrical` block: no vendor publishes pairRatings, insulationPaths, clearance/creepage or dielectric withstanding for a backshell. Populated on the carrying classes only — bare contacts, contact inserts, jumper bars, IC sockets, coaxial contacts and RF adapters |
+| `material` | no | `$ref` to `connector.json#/$defs/material`, **reused verbatim** — the `*Ref` ids into `conas-materials` for contact base / housing / shield / seal plus the `plating` stack. An accessory's housing polymer and contact plating are the same vocabulary, so plating is *not* restated on the contact branch |
+| `environmental` | no | `$ref` to `connector.json#/$defs/environmental`, **reused verbatim**. `operatingTemperature` is the single most commonly published accessory rating (61% of measured rows) |
+| `accessoryDetails` | **yes** | The two-branch discriminated union — below |
+| `provenance` | no | `$ref` to the PEAS `provenance` type; same trail as every other part |
+| `geometry` (component level, Tier 2) | no | `$ref` to `conas/utils.json#/$defs/geometry` — the same 3D type as `connector.geometry`, for the accessories that are worth modelling (cages and IC sockets have PCB footprints; backshells and hoods have bodies) |
+
+### `accessoryDetails` branch 1 — `accessoryGeneric`
+
+`kind` is required; **every other field is optional**, because the whole point of the
+family is that these parts publish an identity and a host system and often nothing else.
+The descriptors are the union of what the twenty classes distinguish themselves by; a
+class populates the three or four that apply to it.
+
+`kind` ∈ `backshell` · `hoodShell` · `capCover` · `identificationLabel` ·
+`terminalPositionAssurance` · `cableEntry` · `sealGasket` · `sealingPlug` ·
+`mountingHardware` · `busbarJumper` · `cableSplice` · `contactInsert` ·
+`transceiverCage` · `rfAdapter` · `tooling` · `codingKey` · `emiShield` ·
+`lightingHolder` · `icSocket` · `other`
+
+`other` is an explicit, **closed and empty-of-obligation** escape hatch for the long tail
+of one-off accessories (grounding blocks, shunts, backplates, motor connection kits) —
+a named class, not an open door.
+
+| Field | Unit / type | Used by |
+|---|---|---|
+| `kind` | enum, **required** | all |
+| `shellSize` | string (alphanumeric vendor code, not a length) | hoods, backshells, cable clamp kits |
+| `cableExit` | enum `straight` · `rightAngle` · `angled45` · `angled30` · `variable` | backshells, hoods, glands |
+| `cableDiameterRange` | `{minimum, maximum}` in **m** (a single published diameter sets both) | glands, backshells, clamp kits, splices |
+| `threadDesignation` | string, as published (`M20 x 1.5`, `PG16`, `4-40 UNC`) | glands, screwlocks, nuts, studs |
+| `sealType` | enum `oRing` · `wireSeal` · `cavitySeal` · `panelGasket` · `interfaceSeal` · `emiGasket` · `boot` · `sleeve` | sealGasket, sealingPlug |
+| `shielded` | boolean | metallised backshells, EMI hoods and shields |
+| `tethered` | boolean (captive on a lanyard vs loose) | capCover |
+| `markingText` | string, the pre-printed legend verbatim (`11-20`, `L1 L2 L3 N PE`) | identificationLabel (blank strips omit it) |
+| `portsWide` / `portsHigh` | integer | transceiverCage (the 4 and the 1 of a 1-by-4 cage) |
+| `interfaceA` / `interfaceB` | string (`SMA`, `N`, `BNC`); equal for an in-series adapter | rfAdapter |
+| `hardwareType` | enum `nut` · `screw` · `screwlock` · `jackscrew` · `washer` · `bracket` · `rail` · `threadedInsert` · `clip` · `standoff` · `stud` · `other` | mountingHardware |
+| `toolType` | enum `insertion` · `extraction` · `crimp` · `applicator` · `press` · `die` · `gauge` · `other` | tooling |
+| `codingPosition` | string, as published (`A`, `1-4`) | codingKey |
+
+### `accessoryDetails` branch 2 — `accessoryContact`
+
+A bare contact — crimp, solder, IDC, press-fit or coaxial terminals sold loose, to be
+loaded into a housing. `kind` is pinned to the const `"contact"`.
+
+| Field | Unit / type |
+|---|---|
+| `kind` | `const: "contact"`, **required** |
+| `terminationStyle` | enum `crimp` · `solder` · `solderCup` · `idc` · `pressFit` · `screw` · `wireWrap` · `weld` · `pierce` · `pokeIn` |
+| `wireGaugeRange` | `$ref` to `conas/utils.json#/$defs/wireGaugeRange` — the terminal-block type, reused unchanged (AWG and/or SI area in m²) |
+| `contactSize` | string — a size **code** (`16`, `22`, `0`), not a length: the MIL/AMP scale is ordinal and vendors also publish letters |
+| `contactRetention` | enum `lockingLance` · `retentionClip` · `shoulder` · `screwMachine` · `none` |
+
+Ratings live in the shared `electrical` block and plating in the shared `material` block,
+so neither is restated here.
+
+**A contact must say something that makes it a contact.** Beyond `kind`, the branch
+carries an `anyOf` requiring **at least one** of `terminationStyle`, `wireGaugeRange`,
+`contactSize` or `contactRetention`. A record carrying only `{"kind": "contact"}` names a
+class and describes nothing — it is indistinguishable from an unsourced seed while
+claiming to be a real orderable terminal, so it is rejected. This is the branch's whole
+reason for existing, and it is the one gate in the family that has a residue (see below).
+
+### Requirement side
+
+`inputs/designRequirements.json` gains two accessory-side fields alongside
+`connectorFamily`:
+
+- **`accessoryKind`** — `$ref`s the part-side anchor
+  `connectorAccessory.json#/$defs/accessoryKind` (the twenty generic classes plus
+  `contact`, defined as *one* list, not a second copy), so the selection vocabulary
+  cannot drift from the part vocabulary.
+- **`hostSeries`** — the host connector system the accessory must fit. This, not the
+  class, is what actually selects an accessory: a backshell only fits the series it was
+  drawn for.
+
+A requirements document constrains `connectorFamily` **or** the accessory pair, never
+both.
+
+### Coverage against real data
+
+Converted from the 18,995 accessory rows measured in `TAS/data/quarantine.ndjson`
+(the cohort of ABT #1138), with per-`kind` descriptors mined from the vendor description
+strings:
+
+| | rows |
+|---|---:|
+| accessory cohort | 18,995 |
+| **validate as `connectorAccessory`** | **18,375 (96.7%)** |
+| residue | 620 (3.3%) |
+
+The residue is **entirely** bare contacts — 620 of the 3,944 — whose vendor description
+names no termination, no wire gauge, no contact size and no retention (`"Gold (Au),
+Socket Contact"`, `"Cable Contact Tube"`, `"Power Contact Assembly, Phosphor Bronze"`).
+They are real parts; they are held out by the `anyOf` gate above, on purpose, until one
+of those four fields is sourced from the drawing. Every one of the other twenty classes
+converts at 100%.
 
 ## `conas-materials` — shared general-purpose material registry
 

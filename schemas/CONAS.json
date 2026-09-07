@@ -2,12 +2,12 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/conas/CONAS.json",
     "title": "CONAS",
-    "description": "Connector-family Agnostic Structure (CONAS). A document carries inputs, exactly one 'connector' component, and outputs. Unlike RAS (which discriminates device type at the top level), CONAS keeps a single 'connector' field and discriminates the family internally on connector.datasheetInfo.part.family, because the parametric core is shared across all connector families and only a small block differs per family.",
+    "description": "Connector-family Agnostic Structure (CONAS). A document carries inputs, outputs, and exactly one component: either a 'connector' (a mated connector, whose family is discriminated internally on connector.datasheetInfo.familyDetails.family, because the parametric core is shared across all connector families and only a small block differs per family) or a 'connectorAccessory' (a connector-system part that is not itself a mated connector — backshell, bare contact, hood, cap, marker card, TPA retainer, gland, seal, jumper bar, cage, coding key, tool). The two are separate top-level fields, not families of one another: connector.datasheetInfo requires part + electrical + mechanical + familyDetails, and an accessory is structurally missing three of the four. Folding accessories in as a fifteenth family would have forced electrical and mechanical to stop being required, re-opening the empty-block hole that minProperties:1 was added to close.",
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "inputs": {
-            "description": "Design requirements and operating points for this connector",
+            "description": "Design requirements and operating points for this connector or accessory",
             "title": "inputs",
             "$ref": "./inputs.json"
         },
@@ -15,6 +15,11 @@
             "description": "Connector component data",
             "title": "connector",
             "$ref": "./connector.json"
+        },
+        "connectorAccessory": {
+            "description": "Connector-system accessory data (backshells, bare contacts, hoods, caps, labels, retainers, glands, seals, hardware, jumper bars, splices, contact inserts, cages, RF adapters, tooling, coding keys, EMI shields, LED holders, sealing plugs, IC sockets)",
+            "title": "connectorAccessory",
+            "$ref": "./connectorAccessory.json"
         },
         "outputs": {
             "description": "Computed results per operating point. outputs[i] aligns positionally with inputs.operatingPoints[i].",
@@ -27,7 +32,21 @@
     },
     "required": [
         "inputs",
-        "connector",
         "outputs"
+    ],
+    "$comment": "Exactly one component per document. A closed oneOf over the two required-key branches, so a document carrying BOTH connector and connectorAccessory matches both branches and is rejected, and one carrying neither matches none and is rejected.",
+    "oneOf": [
+        {
+            "description": "A mated connector — defined by connector.json.",
+            "required": [
+                "connector"
+            ]
+        },
+        {
+            "description": "A connector-system accessory — defined by connectorAccessory.json.",
+            "required": [
+                "connectorAccessory"
+            ]
+        }
     ]
 }

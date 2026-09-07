@@ -1,0 +1,115 @@
+{
+    "inputs": {
+        "operatingPoints": [
+            {
+                "name": "10 A harness conductor, 85 C ambient",
+                "conditions": {
+                    "ambientTemperature": 85
+                },
+                "excitationsPerPort": [
+                    {
+                        "port": "CONTACT",
+                        "excitation": {
+                            "frequency": 0,
+                            "current": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 10.0,
+                                    "offset": 10.0,
+                                    "rms": 10.0
+                                }
+                            },
+                            "voltage": {
+                                "processed": {
+                                    "label": "rectangular",
+                                    "peak": 48.0,
+                                    "offset": 48.0,
+                                    "rms": 48.0
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "designRequirements": {
+            "name": "Loose crimp terminal for the 16 AWG high-power D-sub harness",
+            "accessoryKind": "contact",
+            "hostSeries": "FCT Products",
+            "requiredCurrentPerContact": 10.0,
+            "requiredVoltageRating": 48.0
+        }
+    },
+    "connectorAccessory": {
+        "manufacturerInfo": {
+            "name": "Molex",
+            "reference": "1727040142",
+            "status": "production",
+            "family": "FCT Products",
+            "description": "FCT High Power Contact, Male, Straight, Crimp, 0.80um Gold Mating Plating, 0.20um Gold Termination Plating, 10.0A, 20-16 AWG",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "1727040142",
+                    "series": "FCT Products",
+                    "description": "FCT High Power Contact, Male, Straight, Crimp, 0.80um Gold Mating Plating, 0.20um Gold Termination Plating, 10.0A, 20-16 AWG",
+                    "matingPolarity": "male"
+                },
+                "hostSystem": {
+                    "series": "FCT Products",
+                    "manufacturer": "Molex"
+                },
+                "electrical": {
+                    "ratedCurrentPerContact": 10.0
+                },
+                "material": {
+                    "contactPlating": {
+                        "matingAreaMaterialRef": "au-gold",
+                        "matingAreaThickness": 8e-07,
+                        "terminationMaterialRef": "au-gold",
+                        "terminationThickness": 2e-07
+                    }
+                },
+                "environmental": {
+                    "operatingTemperature": {
+                        "minimum": -55.0,
+                        "maximum": 135.0
+                    }
+                },
+                "accessoryDetails": {
+                    "kind": "contact",
+                    "terminationStyle": "crimp",
+                    "wireGaugeRange": {
+                        "minimumAwg": 16,
+                        "maximumAwg": 20
+                    }
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerParametric",
+                        "sourceName": "Molex product catalogue",
+                        "sourceUrl": "https://www.molex.com/en-us/products/part-detail/1727040142",
+                        "retrievedDate": "2026-06-24",
+                        "fields": [
+                            "electrical.ratedCurrentPerContact",
+                            "part.matingPolarity",
+                            "environmental.operatingTemperature"
+                        ]
+                    },
+                    {
+                        "source": "manufacturerDatasheet",
+                        "sourceName": "Molex FCT High Power Contact description string",
+                        "retrievedDate": "2026-09-07",
+                        "fields": [
+                            "accessoryDetails.terminationStyle",
+                            "accessoryDetails.wireGaugeRange",
+                            "material.contactPlating"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "outputs": [
+        {}
+    ]
+}

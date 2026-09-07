@@ -3,7 +3,7 @@
     "$id": "https://psma.com/conas/inputs/designRequirements.json",
     "$comment": "SPDX-License-Identifier: MIT",
     "title": "designRequirements",
-    "description": "Requirements a CONAS connector must comply with. Built on the PEAS designRequirementsBase mixin. The connectorFamily field aligns with connector.datasheetInfo.familyDetails.family and may constrain candidate selection.",
+    "description": "Requirements a CONAS connector or connector accessory must comply with. Built on the PEAS designRequirementsBase mixin. The connectorFamily field aligns with connector.datasheetInfo.familyDetails.family and may constrain candidate selection; accessoryKind and hostSeries are the accessory-side equivalents, aligning with connectorAccessory.datasheetInfo.accessoryDetails.kind and .hostSystem.series. A requirements document constrains one or the other, never both.",
     "allOf": [
         {
             "$ref": "https://psma.com/peas/utils.json#/$defs/designRequirementsBase"
@@ -30,6 +30,14 @@
                         "acInlet",
                         "solderPad"
                     ]
+                },
+                "accessoryKind": {
+                    "description": "Required accessory class (matches connectorAccessory.datasheetInfo.accessoryDetails.kind). Refs the part-side anchor so the selection vocabulary cannot drift from the part vocabulary. Omit to leave unconstrained.",
+                    "$ref": "https://psma.com/conas/connectorAccessory.json#/$defs/accessoryKind"
+                },
+                "hostSeries": {
+                    "description": "Required host connector system the accessory must fit (matches connectorAccessory.datasheetInfo.hostSystem.series, e.g. 'Mini-Fit Jr.'). This is the constraint that actually selects an accessory: the class alone does not, because a backshell only fits the series it was drawn for.",
+                    "type": "string"
                 },
                 "minimumPositions": {
                     "description": "Minimum number of contact positions required.",
