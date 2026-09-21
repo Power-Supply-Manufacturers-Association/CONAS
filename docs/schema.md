@@ -41,6 +41,7 @@ CONAS  (https://psma.com/conas/CONAS.json)   { inputs, outputs, oneOf[ connector
 │   │              acInlet → standardSheet C1..C24, fuse/switch/filter flags)
 │   │
 │   ├─ distributorsInfo[]
+│   ├─ substitutesInfo[]       ◄── PEAS substituteInfo: successors + second sources
 │   ├─ geometry                ◄── TIER 2: 3D (optional)
 │   │   { coordinateSystem, boundingEnvelope, matedHeight, keepOut, pcbFootprint,
 │   │     mountingFeatures, parametric{housingExtrusion, contactArray}, cadModels[] (STEP/glTF) }
@@ -66,6 +67,7 @@ CONAS  (https://psma.com/conas/CONAS.json)   { inputs, outputs, oneOf[ connector
 │   │       │     accessoryGeneric  kind ∈ 20 classes  │  accessoryContact  kind = contact
 │   │       └─ provenance[]
 │   ├─ distributorsInfo[]
+│   ├─ substitutesInfo[]       ◄── PEAS substituteInfo (same as connector)
 │   └─ geometry                ◄── TIER 2: 3D (optional, same type as connector.geometry)
 │
 └─ outputs[]   (outputs[i] ↔ operatingPoints[i], each with PEAS outputBase provenance)
